@@ -14,23 +14,23 @@ public class StrategyPatternGenerator {
 
     private PsiClass psiClass;
     private List<PsiMethod> psiMethods;
-    private String INTERFACE_CLASS_NAME;
+    private String strategyName;
 
-    public StrategyPatternGenerator(PsiClass psiClass, List<PsiMethod> psiMethods) {
+    public StrategyPatternGenerator(PsiClass psiClass, String strategyName, List<PsiMethod> psiMethods) {
         this.psiClass = psiClass;
         this.psiMethods = psiMethods;
-        this.INTERFACE_CLASS_NAME = Objects.requireNonNull(psiClass.getName()).concat("Interface");
+        this.strategyName = strategyName;
     }
 
     public void generate() {
         PsiClass interfaceClass = generateInterfaceClass();
-        PsiFile interfaceFile = psiClass.getContainingFile().getContainingDirectory().createFile(INTERFACE_CLASS_NAME.concat(".java"));
+        PsiFile interfaceFile = psiClass.getContainingFile().getContainingDirectory().createFile(strategyName.concat(".java"));
         interfaceFile.add(interfaceClass);
         prepareImplementationClass();
     }
 
     private PsiClass generateInterfaceClass() {
-        PsiClass interfaceClass = JavaPsiFacade.getElementFactory(psiClass.getProject()).createInterface(INTERFACE_CLASS_NAME);
+        PsiClass interfaceClass = JavaPsiFacade.getElementFactory(psiClass.getProject()).createInterface(strategyName);
         for (PsiMethod psiMethod : psiMethods) {
             StringBuilder methodSb = new StringBuilder();
             methodSb.append(Objects.requireNonNull(psiMethod.getReturnType()).getCanonicalText()).append(" ").append(psiMethod.getName()).append("(");

@@ -10,16 +10,17 @@ import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 
-public class StrategyDialog extends DialogWrapper {
+public class StrategyMethodsDialog extends DialogWrapper {
 
     private final LabeledComponent<JPanel> component;
     private JList<PsiMethod> jMethods;
 
-    StrategyDialog(PsiClass psiClass) {
+    StrategyMethodsDialog(PsiClass psiClass) {
         super(psiClass.getProject());
-        setTitle("Select Methods for Strategy Pattern");
+        setTitle("Strategy Pattern");
         CollectionListModel<PsiMethod> fields = new CollectionListModel<>(psiClass.getMethods());
         jMethods = new JBList<>(fields);
         jMethods.setCellRenderer(new DefaultListCellRenderer());
