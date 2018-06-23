@@ -9,26 +9,28 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.ui.CollectionListModel;
 import design.patterns.builder.BuilderPatternGenerator;
+
+import java.util.List;
+import java.util.Objects;
 
 public class BuilderAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
         PsiClass psiClass = getPsiClassFromContext(e);
-        BuilderDialog builderDialog = new BuilderDialog(psiClass);
+        BuilderDialog builderDialog = new BuilderDialog(Objects.requireNonNull(psiClass));
         builderDialog.show();
         if (builderDialog.isOK()) {
-            generateBuilderPattern(psiClass, builderDialog.getFields());
+            generateBuilderPattern(psiClass, builderDialog.getSelectedFields());
         }
     }
 
-    private void generateBuilderPattern(PsiClass psiClass, CollectionListModel<PsiField> fields) {
+    private void generateBuilderPattern(PsiClass psiClass, List<PsiField> selectedFields) {
         new WriteCommandAction.Simple(psiClass.getProject(), psiClass.getContainingFile()) {
             @Override
             protected void run() {
-                psiClass.add(new BuilderPatternGenerator(psiClass).generate());
+                psiClass.add(new BuilderPatternGenerator(psiClass, selectedFields).generate());
             }
         }.execute();
     }

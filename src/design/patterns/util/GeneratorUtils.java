@@ -23,32 +23,32 @@ public class GeneratorUtils {
         return JavaPsiFacade.getElementFactory(psiClass.getProject()).createConstructor(Objects.requireNonNull(psiClass.getName()));
     }
 
-    public static List<PsiMethod> generateGettersAndSettersForClass(PsiClass psiClass) {
+    public static List<PsiMethod> generateGettersAndSettersForClass(List<PsiField> psiFields, PsiClass psiClass) {
         List<PsiMethod> psiMethods = new ArrayList<>();
-        for (PsiField psiField : psiClass.getFields()) {
-            psiMethods.add(generateGetterForField(psiField, psiClass));
-            psiMethods.add(generateSetterForField(psiField, psiClass));
+        for (PsiField psiField : psiFields) {
+            psiMethods.add(generateGetterOfFieldInClass(psiField, psiClass));
+            psiMethods.add(generateSetterOfFieldInClass(psiField, psiClass));
         }
         return psiMethods;
     }
 
-    public static List<PsiMethod> generateGettersForClass(PsiClass psiClass) {
+    public static List<PsiMethod> generateGettersOfFieldsInClass(List<PsiField> psiFields, PsiClass psiClass) {
         List<PsiMethod> getters = new ArrayList<>();
-        for (PsiField psiField : psiClass.getFields()) {
-            getters.add(generateGetterForField(psiField, psiClass));
+        for (PsiField psiField : psiFields) {
+            getters.add(generateGetterOfFieldInClass(psiField, psiClass));
         }
         return getters;
     }
 
-    public static List<PsiMethod> generateSettersForClass(PsiClass psiClass) {
+    public static List<PsiMethod> generateSettersOfFieldsInClass(List<PsiField> psiFields, PsiClass psiClass) {
         List<PsiMethod> setters = new ArrayList<>();
-        for (PsiField psiField : psiClass.getFields()) {
-            setters.add(generateSetterForField(psiField, psiClass));
+        for (PsiField psiField : psiFields) {
+            setters.add(generateSetterOfFieldInClass(psiField, psiClass));
         }
         return setters;
     }
 
-    public static PsiMethod generateGetterForField(PsiField psiField, PsiClass psiClass) {
+    public static PsiMethod generateGetterOfFieldInClass(PsiField psiField, PsiClass psiClass) {
         StringBuilder getterSb = new StringBuilder();
         getterSb.append("public " + psiField.getType().getCanonicalText() + " get" + toUpperCaseFirstLetterString(Objects.requireNonNull(psiField.getName())) + "(){\n");
         getterSb.append("return ").append(toLowerCaseFirstLetterString(psiField.getName())).append(";\n");
@@ -57,7 +57,7 @@ public class GeneratorUtils {
         return getMethod;
     }
 
-    public static PsiMethod generateSetterForField(PsiField psiField, PsiClass psiClass) {
+    public static PsiMethod generateSetterOfFieldInClass(PsiField psiField, PsiClass psiClass) {
         StringBuilder setterSb = new StringBuilder();
         setterSb.append("public void set").append(toUpperCaseFirstLetterString(psiField.getName()))
                 .append("(").append(psiField.getType().getCanonicalText()).append(" ").append(toLowerCaseFirstLetterString(psiField.getName())).append(") {\n");
