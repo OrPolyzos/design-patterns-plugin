@@ -1,17 +1,15 @@
 <idea-plugin>
-    <id>company.unique.plugin.id</id>
-    <name>Plugin display name here</name>
-    <version>1.0</version>
+    <id>design.patterns.idea.plugin</id>
+    <name>Design Patterns Generator</name>
+    <version>1.1</version>
     <vendor email="orestes.polyzos@gmail.com" url="http://www.yourcompany.com">YourCompany</vendor>
 
     <description><![CDATA[
-      Provides implementation of various design patterns.<br>
-      <em>most HTML tags may be used</em>
+      Provides implementation of various design patterns.
     ]]></description>
-
+    f
     <change-notes><![CDATA[
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
+      No notes yet
     ]]>
     </change-notes>
 
@@ -32,11 +30,19 @@
     <actions>
         <group id="design-patterns-group" text="Design Patterns" popup="true">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-            <action id="builderDesignPattern" class="BuilderAction" text="Builder"
+            <action id="builderDesignPattern" class="design.patterns.builder.BuilderAction" text="Builder"
                     description="Implements Builder Design Pattern">
                 <add-to-group group-id="design-patterns-group" anchor="first"/>
             </action>
         </group>
+        <action id="singletonDesignPattern" class="design.patterns.singleton.SingletonAction" text="Singleton"
+                description="Implements Singleton Design Pattern">
+            <add-to-group group-id="design-patterns-group" anchor="after" relative-to-action="builderDesignPattern"/>
+        </action>
+        <action id="strategyDesignPattern" class="design.patterns.strategy.StrategyAction" text="Strategy"
+                description="Implements Strategy Design Pattern">
+            <add-to-group group-id="design-patterns-group" anchor="after" relative-to-action="singletonDesignPattern"/>
+        </action>
     </actions>
 
 

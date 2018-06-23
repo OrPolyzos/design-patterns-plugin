@@ -1,3 +1,5 @@
+package design.patterns.builder;
+
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.psi.PsiClass;
@@ -15,10 +17,10 @@ public class BuilderDialog extends DialogWrapper {
     private final LabeledComponent<JPanel> component;
     private JList<PsiField> jFields;
 
-    public BuilderDialog(PsiClass psiClass) {
+    BuilderDialog(PsiClass psiClass) {
         super(psiClass.getProject());
         setTitle("Select Fields for Builder Pattern");
-        CollectionListModel<PsiField> fields = new CollectionListModel<>(psiClass.getAllFields());
+        CollectionListModel<PsiField> fields = new CollectionListModel<>(psiClass.getFields());
         jFields = new JBList<>(fields);
         jFields.setCellRenderer(new DefaultListCellRenderer());
 
@@ -29,7 +31,7 @@ public class BuilderDialog extends DialogWrapper {
         init();
     }
 
-    public List<PsiField> getSelectedFields() {
+    List<PsiField> getSelectedFields() {
         return jFields.getSelectedValuesList();
     }
 

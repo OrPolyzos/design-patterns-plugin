@@ -35,16 +35,7 @@ public class BuilderPatternGenerator {
             PsiUtil.setModifierProperty(psiField, PsiModifier.PRIVATE, true);
             PsiUtil.setModifierProperty(psiField, PsiModifier.STATIC, false);
         }
-        if (parentClass.getConstructors().length == 0) {
-            parentClass.add(generateConstructorForParentClass());
-        } else {
-            Arrays.asList(parentClass.getConstructors()).forEach(constructor -> {
-                        PsiUtil.setModifierProperty(constructor, PsiModifier.PRIVATE, true);
-                        PsiUtil.setModifierProperty(constructor, PsiModifier.STATIC, false);
-                    }
-            );
-        }
-
+        parentClass.add(GeneratorUtils.generatePrivateNonStaticConstructor(parentClass));
         generateGettersSettersForParentClass()
                 .stream()
                 .filter(getterOrSetter ->
@@ -66,13 +57,6 @@ public class BuilderPatternGenerator {
         generateBuilderWithMethods(builderClass).forEach(builderClass::add);
         builderClass.add(generateBuildMethod(builderClass));
         return builderClass;
-    }
-
-    private PsiMethod generateConstructorForParentClass() {
-        PsiMethod parentClassConstructor = GeneratorUtils.generateConstructorForClass(parentClass);
-        PsiUtil.setModifierProperty(parentClassConstructor, PsiModifier.PRIVATE, true);
-        PsiUtil.setModifierProperty(parentClassConstructor, PsiModifier.STATIC, false);
-        return parentClassConstructor;
     }
 
     private List<PsiMethod> generateGettersSettersForParentClass() {

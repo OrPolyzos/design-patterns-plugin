@@ -1,12 +1,11 @@
 package design.patterns.util;
 
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiMethod;
+import com.intellij.psi.*;
+import com.intellij.psi.util.PsiUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -66,4 +65,23 @@ public class GeneratorUtils {
         setterSb.append("}");
         return JavaPsiFacade.getElementFactory(psiClass.getProject()).createMethodFromText(setterSb.toString(), psiClass);
     }
+
+    public static PsiMethod generatePrivateNonStaticConstructor(PsiClass psiClass) {
+        Arrays.stream(psiClass.getConstructors())
+                .filter(c -> c.getParameterList().isEmpty())
+                .forEach(PsiMethod::delete);
+        PsiMethod parentClassConstructor = GeneratorUtils.generateConstructorForClass(psiClass);
+        PsiUtil.setModifierProperty(parentClassConstructor, PsiModifier.PRIVATE, true);
+        PsiUtil.setModifierProperty(parentClassConstructor, PsiModifier.STATIC, false);
+        return parentClassConstructor;
+    }
+
+    public static void changeConstructorsToPrivateNonStatic(PsiClass psiClass) {
+        Arrays.asList(psiClass.getConstructors()).forEach(constructor -> {
+                    PsiUtil.setModifierProperty(constructor, PsiModifier.PRIVATE, true);
+                    PsiUtil.setModifierProperty(constructor, PsiModifier.STATIC, false);
+                }
+        );
+    }
 }
+
