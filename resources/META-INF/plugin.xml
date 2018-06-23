@@ -1,17 +1,21 @@
 <idea-plugin>
-    <id>design.patterns.idea.plugin</id>
-    <name>Design Patterns Generator</name>
-    <version>1.1</version>
-    <vendor email="orestes.polyzos@gmail.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <id>design.patterns.plugin</id>
+    <name>Design Patterns Plugin</name>
+    <version>1.0</version>
+    <vendor email="orestes.polyzos@gmail.com" url="https://www.linkedin.com/in/orestes-polyzos-022479ba/">Orestes Polyzos</vendor>
 
     <description><![CDATA[
-      Provides implementation of various design patterns.
+      Provides on the fly implementation of known design patterns.
+      <br/>
+      Implemented Design Patterns till now:
+      <ul>
+        <li>(Inner) Builder</li>
+        <li>Singleton</li>
+        <li>Strategy</li>
+      </ul>
     ]]></description>
-    f
-    <change-notes><![CDATA[
-      No notes yet
-    ]]>
-    </change-notes>
+
+    <change-notes/>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
     <idea-version since-build="173.0"/>
