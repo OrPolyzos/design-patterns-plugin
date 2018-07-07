@@ -1,4 +1,4 @@
-package design.patterns.strategy;
+package com.design.patterns.base.dialog;
 
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.LabeledComponent;
@@ -8,20 +8,20 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class StrategyNameDialog extends DialogWrapper {
+public class InputValueDialog extends DialogWrapper {
 
     private final LabeledComponent<JPanel> component;
     private JBTextField jbTextField;
 
-    StrategyNameDialog(PsiClass psiClass) {
+    public InputValueDialog(PsiClass psiClass, String title, String componentText) {
         super(psiClass.getProject());
-        setTitle("Strategy Pattern");
+        setTitle(title);
         JPanel jPanel = new JPanel();
         jbTextField = new JBTextField();
         jbTextField.setEditable(true);
         jbTextField.setColumns(30);
         jPanel.add(jbTextField);
-        component = LabeledComponent.create(jPanel, "Give a name for the interface:");
+        component = LabeledComponent.create(jPanel, componentText);
         init();
     }
 
@@ -31,7 +31,7 @@ public class StrategyNameDialog extends DialogWrapper {
         return component;
     }
 
-    String getName() {
+    public String getInput() {
         return jbTextField.getText();
     }
 }

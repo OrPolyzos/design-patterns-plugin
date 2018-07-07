@@ -1,8 +1,8 @@
-package design.patterns.builder;
+package com.design.patterns.builder;
 
+import com.design.patterns.util.GeneratorUtils;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiUtil;
-import design.patterns.util.GeneratorUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,22 +10,23 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static design.patterns.util.FormatUtils.toLowerCaseFirstLetterString;
-import static design.patterns.util.FormatUtils.toUpperCaseFirstLetterString;
+import static com.design.patterns.util.FormatUtils.toLowerCaseFirstLetterString;
+import static com.design.patterns.util.FormatUtils.toUpperCaseFirstLetterString;
 
 public class BuilderPatternGenerator {
 
     private final PsiClass parentClass;
     private final List<PsiField> selectedFields;
     private final String BUILDER_CLASS_NAME;
+    private final String BUILDER_CLASS_NAME_SUFFIX = "Builder";
 
-    public BuilderPatternGenerator(PsiClass parentClass, List<PsiField> selectedFields) {
+    BuilderPatternGenerator(PsiClass parentClass, List<PsiField> selectedFields) {
         this.parentClass = parentClass;
         this.selectedFields = selectedFields;
-        this.BUILDER_CLASS_NAME = Objects.requireNonNull(parentClass.getName()).concat("Builder");
+        this.BUILDER_CLASS_NAME = Objects.requireNonNull(parentClass.getName()).concat(BUILDER_CLASS_NAME_SUFFIX);
     }
 
-    public PsiClass generate() {
+    PsiClass generate() {
         prepareParentClass();
         return generateStuffForBuilderClass();
     }

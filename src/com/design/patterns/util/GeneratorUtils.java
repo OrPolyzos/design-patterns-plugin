@@ -1,18 +1,30 @@
-package design.patterns.util;
+package com.design.patterns.util;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiUtil;
+import com.intellij.ui.CollectionListModel;
+import com.intellij.ui.components.JBList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import javax.swing.*;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
-import static design.patterns.util.FormatUtils.toLowerCaseFirstLetterString;
-import static design.patterns.util.FormatUtils.toUpperCaseFirstLetterString;
+import static com.design.patterns.util.FormatUtils.toLowerCaseFirstLetterString;
+import static com.design.patterns.util.FormatUtils.toUpperCaseFirstLetterString;
 
 public class GeneratorUtils {
+
+    public static JBList<PsiMember> getCandidatePsiMembersOfClassBasedOnPredicate(Collection<PsiMember> allPsiMembers, Predicate<PsiMember> predicateForPsiMembersToKeep){
+        Collection<PsiMember> filteredPsiMembers = allPsiMembers.stream()
+                .filter(predicateForPsiMembersToKeep)
+                .collect(Collectors.toList());
+        CollectionListModel<PsiMember> collectionListModel = new CollectionListModel<>(filteredPsiMembers);
+        JBList<PsiMember> jbPsiMembers =  new JBList<>(collectionListModel);
+        jbPsiMembers.setCellRenderer(new DefaultListCellRenderer());
+        return jbPsiMembers;
+    }
 
     public static PsiClass generateClassForProjectWithName(Project project, String className) {
         return JavaPsiFacade.getElementFactory(project).createClass(className);
@@ -83,5 +95,7 @@ public class GeneratorUtils {
                 }
         );
     }
+
+
 }
 

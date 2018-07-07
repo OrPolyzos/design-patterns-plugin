@@ -1,4 +1,4 @@
-package design.patterns.base;
+package com.design.patterns.base;
 
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;

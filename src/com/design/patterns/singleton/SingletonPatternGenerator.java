@@ -1,11 +1,11 @@
-package design.patterns.singleton;
+package com.design.patterns.singleton;
 
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiMethod;
-import design.patterns.util.FormatUtils;
-import design.patterns.util.GeneratorUtils;
+import com.design.patterns.util.FormatUtils;
+import com.design.patterns.util.GeneratorUtils;
 
 import java.util.Arrays;
 import java.util.Objects;

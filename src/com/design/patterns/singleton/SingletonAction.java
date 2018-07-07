@@ -1,9 +1,9 @@
-package design.patterns.singleton;
+package com.design.patterns.singleton;
 
+import com.design.patterns.base.DesignPatternAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.PsiClass;
-import design.patterns.base.DesignPatternAction;
 
 public class SingletonAction extends DesignPatternAction {
 

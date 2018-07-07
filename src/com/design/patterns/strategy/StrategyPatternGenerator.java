@@ -1,4 +1,4 @@
-package design.patterns.strategy;
+package com.design.patterns.strategy;
 
 import com.intellij.psi.*;
 import one.util.streamex.Joining;
@@ -24,7 +24,7 @@ public class StrategyPatternGenerator {
         PsiClass interfaceClass = generateInterfaceClass();
         PsiFile interfaceFile = psiClass.getContainingFile().getContainingDirectory().createFile(strategyName.concat(".java"));
         interfaceFile.add(interfaceClass);
-        prepareImplementationClass(interfaceClass);
+        prepareImplementationClass();
     }
 
     private PsiClass generateInterfaceClass() {
@@ -42,13 +42,12 @@ public class StrategyPatternGenerator {
         return interfaceClass;
     }
 
-    private void prepareImplementationClass(PsiClass interfaceClass) {
+    private void prepareImplementationClass() {
         PsiJavaCodeReferenceElement psiJavaCodeReferenceElement =
                 JavaPsiFacade.getElementFactory(psiClass.getProject()).createReferenceFromText(strategyName, psiClass);
         if (Arrays.stream(Objects.requireNonNull(psiClass.getImplementsList()).getReferencedTypes())
                 .filter(imp -> imp.getName().contains(strategyName))
                 .collect(Collectors.toList()).size() > 0) return;
-
         Objects.requireNonNull(psiClass.getImplementsList()).add(psiJavaCodeReferenceElement);
     }
 }

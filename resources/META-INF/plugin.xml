@@ -34,16 +34,16 @@
     <actions>
         <group id="design-patterns-group" text="Design Patterns" popup="true">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-            <action id="builderDesignPattern" class="design.patterns.builder.BuilderAction" text="Builder"
+            <action id="builderDesignPattern" class="com.design.patterns.builder.BuilderAction" text="Builder"
                     description="Implements Builder Design Pattern">
                 <add-to-group group-id="design-patterns-group" anchor="first"/>
             </action>
         </group>
-        <action id="singletonDesignPattern" class="design.patterns.singleton.SingletonAction" text="Singleton"
+        <action id="singletonDesignPattern" class="com.design.patterns.singleton.SingletonAction" text="Singleton"
                 description="Implements Singleton Design Pattern">
             <add-to-group group-id="design-patterns-group" anchor="after" relative-to-action="builderDesignPattern"/>
         </action>
-        <action id="strategyDesignPattern" class="design.patterns.strategy.StrategyAction" text="Strategy"
+        <action id="strategyDesignPattern" class="com.design.patterns.strategy.StrategyAction" text="Strategy"
                 description="Implements Strategy Design Pattern">
             <add-to-group group-id="design-patterns-group" anchor="after" relative-to-action="singletonDesignPattern"/>
         </action>

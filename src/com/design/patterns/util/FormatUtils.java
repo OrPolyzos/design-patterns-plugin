@@ -1,4 +1,4 @@
-package design.patterns.util;
+package com.design.patterns.util;
 
 public class FormatUtils {
 

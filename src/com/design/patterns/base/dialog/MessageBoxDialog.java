@@ -1,4 +1,4 @@
-package design.patterns.base;
+package com.design.patterns.base.dialog;
 
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.psi.PsiClass;
