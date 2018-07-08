@@ -13,7 +13,7 @@ This plugin is meant to provide on the fly implementation of various design patt
 ## Release History
 * 1.0.1
   * Added Factory Design Pattern 
-  * Fixed bug in package declaration in Strategy Design Pattern 
+  * Fixed bug with package declaration in Strategy Design Pattern 
   * Fixed bug with modifiers of fields and methods in Singleton Design Pattern
 * 1.0.0
     * First upload
