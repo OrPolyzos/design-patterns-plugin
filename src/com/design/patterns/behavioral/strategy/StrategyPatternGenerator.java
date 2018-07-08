@@ -1,6 +1,7 @@
 package com.design.patterns.behavioral.strategy;
 
 import com.intellij.psi.*;
+import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 import one.util.streamex.Joining;
 
 import java.util.Arrays;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 public class StrategyPatternGenerator {
 
     private PsiClass psiClass;
+    private PsiPackageStatement psiPackageStatement;
     private List<PsiMethod> psiMethods;
     private String strategyName;
 
@@ -18,12 +20,15 @@ public class StrategyPatternGenerator {
         this.psiClass = psiClass;
         this.psiMethods = psiMethods;
         this.strategyName = strategyName;
+        this.psiPackageStatement = ((PsiJavaFile) psiClass.getContainingFile()).getPackageStatement();
     }
 
     public void generate() {
         PsiClass interfaceClass = generateInterfaceClass();
         PsiFile interfaceFile = psiClass.getContainingFile().getContainingDirectory().createFile(strategyName.concat(".java"));
         interfaceFile.add(interfaceClass);
+        interfaceFile.addAfter(psiPackageStatement, null);
+        JavaCodeStyleManager.getInstance(interfaceClass.getProject()).optimizeImports(interfaceFile);
         prepareImplementationClass();
     }
 

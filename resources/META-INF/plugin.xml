@@ -23,6 +23,7 @@
         <![CDATA[
             <ul>
                 <li>Fixed bug with package declaration of the created interface in Strategy Design Pattern</li>
+                <li>Fixed bug with modifiers of the variables and methods in Singleton Design Pattern</li>
                 <li>Added Factory Design Pattern</li>
             </ul>
         ]]>
