@@ -17,6 +17,7 @@ out
 *.iml
 *.ipr
 *.md
+*.jar
 */target/
 
 ### NetBeans ###
