@@ -1,4 +1,4 @@
-# Design Patterns plugin for IntelliJ IDEA
+# Design Patterns IntelliJ IDEA Plugin
 This plugin is meant to provide on the fly implementation of various design patterns.
 
 ## Currently supported design patterns
