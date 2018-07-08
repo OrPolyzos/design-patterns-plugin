@@ -19,6 +19,13 @@ import static com.design.patterns.util.FormatUtils.toUpperCaseFirstLetterString;
 
 public class GeneratorUtils {
 
+    public static List<PsiClass> getInterfacesAndExtends(PsiClass psiClass) {
+        List<PsiClass> interfacesAndExtends = new ArrayList<>();
+        interfacesAndExtends.addAll(getInterfaces(psiClass));
+        interfacesAndExtends.addAll(getExtends(psiClass));
+        return interfacesAndExtends;
+    }
+
     public static List<PsiClass> getInterfaces(PsiClass psiClass) {
         if (psiClass.getImplementsList() == null) {
             return new ArrayList<>();
@@ -27,6 +34,18 @@ public class GeneratorUtils {
             return new ArrayList<>();
         }
         return Arrays.stream(psiClass.getImplementsList().getReferencedTypes())
+                .map(PsiClassType::resolve)
+                .collect(Collectors.toList());
+    }
+
+    public static List<PsiClass> getExtends(PsiClass psiClass) {
+        if (psiClass.getExtendsList() == null) {
+            return new ArrayList<>();
+        }
+        if (psiClass.getExtendsList() != null && psiClass.getExtendsList().getReferencedTypes().length == 0) {
+            return new ArrayList<>();
+        }
+        return Arrays.stream(psiClass.getExtendsList().getReferencedTypes())
                 .map(PsiClassType::resolve)
                 .collect(Collectors.toList());
     }
@@ -141,5 +160,6 @@ public class GeneratorUtils {
         enums.forEach(enumString -> enumClass.add(psiElementFactory.createEnumConstantFromText(enumString, psiClass)));
         return enumClass;
     }
+
 }
 

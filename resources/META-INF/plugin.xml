@@ -1,20 +1,30 @@
 <idea-plugin>
     <id>design.patterns.plugin</id>
-    <name>Design Patterns Plugin</name>
-    <version>1.0.1</version>
+    <name>Design Patterns IntelliJ IDEA Plugin</name>
+    <version>1.0.2</version>
     <vendor email="orestes.polyzos@gmail.com">Orestes Polyzos</vendor>
 
     <description>
         <![CDATA[
             <h2>Provides on the fly implementation of various design patterns</h3>
             <br/>
-            <h4>
+            <h4>Currently supported design patterns</hr>
             <hr/>
             <ul>
-                <li>Builder</li>
-                <li>Singleton</li>
-                <li>Strategy</li>
-                <li>Factory</li>
+                <li>Behavioral</li>
+                <ul>
+                    <li>Strategy</li>
+                </ul>
+                <li>Creational</li>
+                <ul>
+                    <li>Builder</li>
+                    <ul>
+                        <li>Inner</li>
+                    </ul>
+                    <li>Factory</li>
+                    <li>Singleton</li>
+                </ul>
+                <li>Structural</li>
             </ul>
         ]]>
     </description>
@@ -22,9 +32,7 @@
     <change-notes>
         <![CDATA[
             <ul>
-                <li>Fixed bug with package declaration of the created interface in Strategy Design Pattern</li>
-                <li>Fixed bug with modifiers of the variables and methods in Singleton Design Pattern</li>
-                <li>Added Factory Design Pattern</li>
+                <li>Added support for "extends" classes in Factory Design Pattern</li>
             </ul>
         ]]>
     </change-notes>

@@ -14,18 +14,18 @@ import java.util.stream.Collectors;
 public class FactoryAction extends DesignPatternAction {
 
     private static final String FACTORY_DIALOG_TITLE = "Factory Design Pattern";
-    private static final String FACTORY_INTERFACE_CHOICE_DIALOG_TEXT = "Based on interface:";
+    private static final String FACTORY_INTERFACE_CHOICE_DIALOG_TEXT = "Based on interface/parent class:";
     private static final String FACTORY_IMPLEMENTORS_CHOICE_DIALOG_TEXT = "Implementors to include:";
-    private static final String EMPTY_INTERFACES_LIST_ERROR_MESSAGE = "The class does not implement any interfaces.";
-    private static final String EXACT_SIZE_INTERFACES_LIST_ERROR_MESSAGE = "You must choose exactly one interface.";
-    private static final String EMPTY_IMPLEMENTORS_LIST_ERROR_MESSAGE = "You must choose at lease one implementor.";
+    private static final String EMPTY_INTERFACES_LIST_ERROR_MESSAGE = "The class does not implement any interfaces or extends and classes.";
+    private static final String EXACT_SIZE_INTERFACES_LIST_ERROR_MESSAGE = "You must choose exactly one interface or one parent class.";
+    private static final String EMPTY_IMPLEMENTORS_LIST_ERROR_MESSAGE = "You must choose at least one implementor.";
 
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
         PsiClass psiClass = getPsiClassFromContext(anActionEvent);
-        List<PsiClass> interfacesList = GeneratorUtils.getInterfaces(psiClass);
-        if (ValidationUtils.validateClassesListIfNonEmpty(psiClass, interfacesList, EMPTY_INTERFACES_LIST_ERROR_MESSAGE)) {
-            SelectStuffDialog<PsiClass> factoryInterfaceChoiceDialog = new SelectStuffDialog<>(psiClass, interfacesList, candidateInterface -> true, FACTORY_DIALOG_TITLE, FACTORY_INTERFACE_CHOICE_DIALOG_TEXT);
+        List<PsiClass> interfacesAndExtendsList = GeneratorUtils.getInterfacesAndExtends(psiClass);
+        if (ValidationUtils.validateClassesListIfNonEmpty(psiClass, interfacesAndExtendsList, EMPTY_INTERFACES_LIST_ERROR_MESSAGE)) {
+            SelectStuffDialog<PsiClass> factoryInterfaceChoiceDialog = new SelectStuffDialog<>(psiClass, interfacesAndExtendsList, candidateInterface -> true, FACTORY_DIALOG_TITLE, FACTORY_INTERFACE_CHOICE_DIALOG_TEXT);
             if (factoryInterfaceChoiceDialog.isOK()) {
                 List<PsiClass> selectedInterfaces = factoryInterfaceChoiceDialog.getSelectedStuff();
                 if (ValidationUtils.validateClassesListForExactSize(psiClass, selectedInterfaces, 1, EXACT_SIZE_INTERFACES_LIST_ERROR_MESSAGE)) {
@@ -44,7 +44,7 @@ public class FactoryAction extends DesignPatternAction {
         return GeneratorUtils.getAllClassesStartingWith(psiClass.getProject(), "")
                 .stream()
                 .filter(candidateImplementor ->
-                        GeneratorUtils.getInterfaces(candidateImplementor).stream()
+                        GeneratorUtils.getInterfacesAndExtends(candidateImplementor).stream()
                                 .map(PsiClass::getName)
                                 .collect(Collectors.toList())
                                 .contains(selectedInterface.getName()))
