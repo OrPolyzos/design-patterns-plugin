@@ -23,6 +23,7 @@ public class InputValueDialog extends DialogWrapper {
         jPanel.add(jbTextField);
         component = LabeledComponent.create(jPanel, componentText);
         init();
+        show();
     }
 
     @Nullable
@@ -32,6 +33,6 @@ public class InputValueDialog extends DialogWrapper {
     }
 
     public String getInput() {
-        return jbTextField.getText();
+        return jbTextField.getText().trim();
     }
 }

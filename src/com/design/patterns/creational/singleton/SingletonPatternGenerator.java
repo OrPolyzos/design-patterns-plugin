@@ -1,11 +1,9 @@
-package com.design.patterns.singleton;
+package com.design.patterns.creational.singleton;
 
-import com.intellij.psi.JavaPsiFacade;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiMethod;
+import com.intellij.psi.*;
 import com.design.patterns.util.FormatUtils;
 import com.design.patterns.util.GeneratorUtils;
+import com.intellij.psi.util.PsiUtil;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -27,7 +25,10 @@ public class SingletonPatternGenerator {
     }
 
     private PsiField generateGetInstanceField() {
-        return JavaPsiFacade.getElementFactory(psiClass.getProject()).createField(instanceFieldName, JavaPsiFacade.getInstance(psiClass.getProject()).getElementFactory().createType(psiClass));
+        PsiField getInstanceField =  JavaPsiFacade.getElementFactory(psiClass.getProject()).createField(instanceFieldName, JavaPsiFacade.getInstance(psiClass.getProject()).getElementFactory().createType(psiClass));
+        PsiUtil.setModifierProperty(getInstanceField, PsiModifier.PRIVATE, true);
+        PsiUtil.setModifierProperty(getInstanceField, PsiModifier.STATIC, true);
+        return getInstanceField;
     }
 
     private void prepareParentClass() {
@@ -43,11 +44,11 @@ public class SingletonPatternGenerator {
 
     private PsiMethod generateGetInstanceMethod() {
         StringBuilder getInstanceMethodSb = new StringBuilder();
-        getInstanceMethodSb.append("private ").append(psiClass.getName()).append(" getInstance() {\n");
+        getInstanceMethodSb.append("public static ").append(psiClass.getName()).append(" getInstance() {\n");
         getInstanceMethodSb.append("if (").append(instanceFieldName).append(" == null){\n");
-        getInstanceMethodSb.append("this.").append(instanceFieldName).append(" = ").append("new ").append(psiClass.getName()).append("();\n");
+        getInstanceMethodSb.append(instanceFieldName).append(" = ").append("new ").append(psiClass.getName()).append("();\n");
         getInstanceMethodSb.append("}");
-        getInstanceMethodSb.append("return this.").append(instanceFieldName).append(";\n");
+        getInstanceMethodSb.append("return ").append(instanceFieldName).append(";\n");
         getInstanceMethodSb.append("}");
         return JavaPsiFacade.getElementFactory(psiClass.getProject()).createMethodFromText(getInstanceMethodSb.toString(), psiClass);
     }

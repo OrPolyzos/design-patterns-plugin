@@ -1,21 +1,32 @@
 <idea-plugin>
     <id>design.patterns.plugin</id>
     <name>Design Patterns Plugin</name>
-    <version>1.0</version>
-    <vendor email="orestes.polyzos@gmail.com" url="https://www.linkedin.com/in/orestes-polyzos-022479ba/">Orestes Polyzos</vendor>
+    <version>1.0.1</version>
+    <vendor email="orestes.polyzos@gmail.com">Orestes Polyzos</vendor>
 
-    <description><![CDATA[
-      Provides on the fly implementation of known design patterns.
-      <br/>
-      Implemented Design Patterns till now:
-      <ul>
-        <li>(Inner) Builder</li>
-        <li>Singleton</li>
-        <li>Strategy</li>
-      </ul>
-    ]]></description>
+    <description>
+        <![CDATA[
+            <h2>Provides on the fly implementation of various design patterns</h3>
+            <br/>
+            <h4>
+            <hr/>
+            <ul>
+                <li>Builder</li>
+                <li>Singleton</li>
+                <li>Strategy</li>
+                <li>Factory</li>
+            </ul>
+        ]]>
+    </description>
 
-    <change-notes/>
+    <change-notes>
+        <![CDATA[
+            <ul>
+                <li>Fixed bug with package declaration of the created interface in Strategy Design Pattern</li>
+                <li>Added Factory Design Pattern</li>
+            </ul>
+        ]]>
+    </change-notes>
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
     <idea-version since-build="173.0"/>
@@ -34,18 +45,22 @@
     <actions>
         <group id="design-patterns-group" text="Design Patterns" popup="true">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
-            <action id="builderDesignPattern" class="com.design.patterns.builder.BuilderAction" text="Builder"
+            <action id="builderDesignPattern" class="com.design.patterns.creational.builder.BuilderAction" text="Builder"
                     description="Implements Builder Design Pattern">
                 <add-to-group group-id="design-patterns-group" anchor="first"/>
             </action>
         </group>
-        <action id="singletonDesignPattern" class="com.design.patterns.singleton.SingletonAction" text="Singleton"
+        <action id="singletonDesignPattern" class="com.design.patterns.creational.singleton.SingletonAction" text="Singleton"
                 description="Implements Singleton Design Pattern">
             <add-to-group group-id="design-patterns-group" anchor="after" relative-to-action="builderDesignPattern"/>
         </action>
-        <action id="strategyDesignPattern" class="com.design.patterns.strategy.StrategyAction" text="Strategy"
+        <action id="strategyDesignPattern" class="com.design.patterns.behavioral.strategy.StrategyAction" text="Strategy"
                 description="Implements Strategy Design Pattern">
             <add-to-group group-id="design-patterns-group" anchor="after" relative-to-action="singletonDesignPattern"/>
+        </action>
+        <action id="factoryDesignPattern" class="com.design.patterns.creational.factory.FactoryAction" text="Factory"
+                description="Implements Factory Design Pattern">
+            <add-to-group group-id="design-patterns-group" anchor="after" relative-to-action="strategyDesignPattern"/>
         </action>
     </actions>
 

@@ -1,17 +1,14 @@
-package com.design.patterns.builder;
+package com.design.patterns.creational.builder;
 
 import com.design.patterns.base.DesignPatternAction;
-import com.design.patterns.base.dialog.SelectMembersDialog;
+import com.design.patterns.base.dialog.SelectStuffDialog;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
-import com.intellij.psi.PsiMember;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class BuilderAction extends DesignPatternAction {
 
@@ -21,12 +18,9 @@ public class BuilderAction extends DesignPatternAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
         PsiClass psiClass = getPsiClassFromContext(e);
-        Predicate<PsiMember> allFields = psiMember -> true;
-
-        SelectMembersDialog builderDialog = new SelectMembersDialog(psiClass, Arrays.asList(psiClass.getFields()), allFields, BUILDER_DIALOG_TITLE, BUILDER_FIELDS_DIALOG_TEXT);
-        builderDialog.show();
+        SelectStuffDialog<PsiField> builderDialog = new SelectStuffDialog<>(psiClass, Arrays.asList(psiClass.getFields()), psiField -> true, BUILDER_DIALOG_TITLE, BUILDER_FIELDS_DIALOG_TEXT);
         if (builderDialog.isOK()) {
-            generateCode(psiClass, builderDialog.getSelectedPsiMembers().stream().map(psiMember -> (PsiField) psiMember).collect(Collectors.toList()));
+            generateCode(psiClass, builderDialog.getSelectedStuff());
         }
     }
 

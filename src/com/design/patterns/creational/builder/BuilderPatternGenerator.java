@@ -1,4 +1,4 @@
-package com.design.patterns.builder;
+package com.design.patterns.creational.builder;
 
 import com.design.patterns.util.GeneratorUtils;
 import com.intellij.psi.*;

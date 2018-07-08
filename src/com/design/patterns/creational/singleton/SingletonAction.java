@@ -1,4 +1,4 @@
-package com.design.patterns.singleton;
+package com.design.patterns.creational.singleton;
 
 import com.design.patterns.base.DesignPatternAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;

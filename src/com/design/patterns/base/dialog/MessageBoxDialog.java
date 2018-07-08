@@ -20,6 +20,7 @@ public class MessageBoxDialog extends DialogWrapper {
         jbTextField.setEditable(false);
         component.add(jbTextField);
         init();
+        show();
     }
 
     @Nullable

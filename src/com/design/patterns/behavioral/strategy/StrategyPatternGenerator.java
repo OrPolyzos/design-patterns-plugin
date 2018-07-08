@@ -1,4 +1,4 @@
-package com.design.patterns.strategy;
+package com.design.patterns.behavioral.strategy;
 
 import com.intellij.psi.*;
 import one.util.streamex.Joining;
