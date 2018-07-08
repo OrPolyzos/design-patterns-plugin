@@ -23,4 +23,4 @@ This plugin is meant to provide on the fly implementation of various design patt
 
 ## Authors
 * **Orestes Polyzos** - *Initial work* - [OrPolyzos](https://github.com/OrPolyzos)
-* See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* See also the list of [contributors](https://github.com/OrPolyzos/Design-Patterns-Intellij-IDEA-Plugin/contributors) who participated in this project.
