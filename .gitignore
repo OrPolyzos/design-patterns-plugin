@@ -13,8 +13,8 @@ out
 
 ### IntelliJ IDEA ###
 ### .idea ###
-*.iws
 ### *.iml ###
+*.iws
 *.ipr
 *.md
 *.jar

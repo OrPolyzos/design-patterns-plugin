@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/design-patterns-idea-plugin.iml" filepath="$PROJECT_DIR$/design-patterns-idea-plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Design-Patterns-Intellij-IDEA-Plugin.iml" filepath="$PROJECT_DIR$/Design-Patterns-Intellij-IDEA-Plugin.iml" />
     </modules>
   </component>
 </project>
