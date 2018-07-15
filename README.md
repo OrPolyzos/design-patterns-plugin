@@ -10,6 +10,9 @@ This plugin is meant to provide on the fly implementation of various design patt
   * Singleton
 * Structural
 
+## How to use
+Assuming you have already installed the plugin, you can use it just by right-clicking inside a .java file while your mouse is inside a code block that defines a class. This will bring up the editor menu and the first option will be Design Patterns, where you can choose which one should be implemented.
+
 ## Getting started
 In order to avoid some common importing errors (when it comes to intellij plugin development), please follow the steps listed below.<br/>
 * Open the project using IntelliJ IDEA
