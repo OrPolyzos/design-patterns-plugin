@@ -1,5 +1,6 @@
 # Design Patterns IntelliJ IDEA Plugin
-This plugin is meant to provide on the fly implementation of various design patterns.
+This plugin is meant to provide on the fly implementation of various design patterns. <br/>
+You can download it directly from IntelliJ IDEA or from https://plugins.jetbrains.com/plugin/10856-design-patterns-plugin
 
 ## Currently supported design patterns
 * Behavioral
