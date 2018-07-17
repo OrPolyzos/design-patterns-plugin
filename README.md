@@ -13,7 +13,8 @@ You can download it directly from IntelliJ IDEA or from https://plugins.jetbrain
 
 ## How to use
 Assuming you have already installed the plugin, you can use it just by right-clicking inside a .java file while your mouse is inside a code block that defines a class. This will bring up the editor menu and the first option will be Design Patterns, where you can choose which one should be implemented.<br/>
-![Demonstration screenshot](/../screenshots/Demonstration.png?raw=true)
+![Demonstration screenshot](/../screenshots/Demonstration.png?raw=true)<br/>
+![Demo gif](/../screenshots/BuilderDemo.gif?raw=true)
 
 ## Getting started
 In order to avoid some common importing errors (when it comes to intellij plugin development), please follow the steps listed below.<br/>
