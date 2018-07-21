@@ -1,10 +1,11 @@
 package com.design.patterns.creational.singleton;
 
-import com.intellij.psi.*;
 import com.design.patterns.util.FormatUtils;
 import com.design.patterns.util.GeneratorUtils;
+import com.intellij.psi.*;
 import com.intellij.psi.util.PsiUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -25,7 +26,7 @@ public class SingletonPatternGenerator {
     }
 
     private PsiField generateGetInstanceField() {
-        PsiField getInstanceField =  JavaPsiFacade.getElementFactory(psiClass.getProject()).createField(instanceFieldName, JavaPsiFacade.getInstance(psiClass.getProject()).getElementFactory().createType(psiClass));
+        PsiField getInstanceField = JavaPsiFacade.getElementFactory(psiClass.getProject()).createField(instanceFieldName, JavaPsiFacade.getInstance(psiClass.getProject()).getElementFactory().createType(psiClass));
         PsiUtil.setModifierProperty(getInstanceField, PsiModifier.PRIVATE, true);
         PsiUtil.setModifierProperty(getInstanceField, PsiModifier.STATIC, true);
         return getInstanceField;
@@ -33,7 +34,7 @@ public class SingletonPatternGenerator {
 
     private void prepareParentClass() {
         GeneratorUtils.changeConstructorsToPrivateNonStatic(psiClass);
-        psiClass.add(GeneratorUtils.generatePrivateNonStaticConstructor(psiClass));
+        psiClass.add(GeneratorUtils.generatePrivateNonStaticConstructor(psiClass, new ArrayList<>()));
         Arrays.stream(psiClass.getFields())
                 .filter(field -> Objects.equals(field.getName(), instanceFieldName))
                 .forEach(PsiField::delete);
