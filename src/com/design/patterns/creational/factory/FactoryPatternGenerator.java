@@ -6,6 +6,7 @@ import com.design.patterns.util.GeneratorUtils;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class FactoryPatternGenerator {
     }
 
     public void generate() {
-        selectedImplementors.forEach(selectedImplementor -> selectedImplementor.add(GeneratorUtils.generateConstructorForClass(selectedImplementor)));
+        selectedImplementors.forEach(selectedImplementor -> selectedImplementor.add(GeneratorUtils.generateConstructorForClass(selectedImplementor, new ArrayList<>())));
         PsiClass enumClass = generateEnumClass();
         PsiClass factoryClass = generateFactoryClass();
     }

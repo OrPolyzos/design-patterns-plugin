@@ -14,21 +14,25 @@ public class BuilderAction extends DesignPatternAction {
 
     private static final String BUILDER_DIALOG_TITLE = "Strategy Design Pattern";
     private static final String BUILDER_FIELDS_DIALOG_TEXT = "Fields to include:";
+    private static final String BUILDER_MANDATORY_FIELDS_DIALOG_TEXT = "Mandatory fields:";
 
     @Override
     public void actionPerformed(AnActionEvent e) {
         PsiClass psiClass = getPsiClassFromContext(e);
-        SelectStuffDialog<PsiField> builderDialog = new SelectStuffDialog<>(psiClass, Arrays.asList(psiClass.getFields()), psiField -> true, BUILDER_DIALOG_TITLE, BUILDER_FIELDS_DIALOG_TEXT);
-        if (builderDialog.isOK()) {
-            generateCode(psiClass, builderDialog.getSelectedStuff());
+        SelectStuffDialog<PsiField> includedFieldsDialog = new SelectStuffDialog<>(psiClass, Arrays.asList(psiClass.getFields()), psiField -> true, BUILDER_DIALOG_TITLE, BUILDER_FIELDS_DIALOG_TEXT);
+        if (includedFieldsDialog.isOK()) {
+            SelectStuffDialog<PsiField> mandatoryFieldsDialog = new SelectStuffDialog<>(psiClass, includedFieldsDialog.getSelectedStuff(), psiField -> true, BUILDER_DIALOG_TITLE, BUILDER_MANDATORY_FIELDS_DIALOG_TEXT);
+            if (mandatoryFieldsDialog.isOK()) {
+                generateCode(psiClass, includedFieldsDialog.getSelectedStuff(), mandatoryFieldsDialog.getSelectedStuff());
+            }
         }
     }
 
-    private void generateCode(PsiClass psiClass, List<PsiField> selectedFields) {
+    private void generateCode(PsiClass psiClass, List<PsiField> includedFields, List<PsiField> mandatoryFields) {
         new WriteCommandAction.Simple(psiClass.getProject(), psiClass.getContainingFile()) {
             @Override
             protected void run() {
-                psiClass.add(new BuilderPatternGenerator(psiClass, selectedFields).generate());
+                new BuilderPatternGenerator(psiClass, includedFields, mandatoryFields).generate();
             }
         }.execute();
     }

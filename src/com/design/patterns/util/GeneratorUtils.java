@@ -8,6 +8,7 @@ import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiUtil;
 import com.intellij.ui.CollectionListModel;
 import com.intellij.ui.components.JBList;
+import one.util.streamex.Joining;
 
 import javax.swing.*;
 import java.util.*;
@@ -18,6 +19,10 @@ import static com.design.patterns.util.FormatUtils.toLowerCaseFirstLetterString;
 import static com.design.patterns.util.FormatUtils.toUpperCaseFirstLetterString;
 
 public class GeneratorUtils {
+
+    public static void modifyPsiMember(PsiMember psiMember, Map<String, Boolean> psiModifierBooleanMap) {
+        psiModifierBooleanMap.forEach((psiModifier, value) -> PsiUtil.setModifierProperty(psiMember, psiModifier, value));
+    }
 
     public static List<PsiClass> getInterfacesAndExtends(PsiClass psiClass) {
         List<PsiClass> interfacesAndExtends = new ArrayList<>();
@@ -88,8 +93,16 @@ public class GeneratorUtils {
         return JavaPsiFacade.getElementFactory(project).createClass(className);
     }
 
-    public static PsiMethod generateConstructorForClass(PsiClass psiClass) {
-        return JavaPsiFacade.getElementFactory(psiClass.getProject()).createConstructor(Objects.requireNonNull(psiClass.getName()));
+    public static PsiMethod generateConstructorForClass(PsiClass psiClass, List<PsiField> constructorArguments) {
+        StringBuilder constructorSB = new StringBuilder();
+        constructorSB.append("public ").append(psiClass.getName()).append("(");
+        String constructorArgumentsString = constructorArguments.stream()
+                .map(constructorArgument -> constructorArgument.getType().getCanonicalText() + " " + constructorArgument.getName()).collect(Joining.with(", "));
+        constructorSB.append(constructorArgumentsString).append("){");
+        String constructorBodyArgumentsString = constructorArguments.stream()
+                .map(constructorArgument -> "this." + constructorArgument.getName() + " = " + constructorArgument.getName() + ";").collect(Joining.with(" "));
+        constructorSB.append(constructorBodyArgumentsString).append("}");
+        return JavaPsiFacade.getElementFactory(psiClass.getProject()).createMethodFromText(constructorSB.toString(), psiClass);
     }
 
     public static List<PsiMethod> generateGettersAndSettersForClass(List<PsiField> psiFields, PsiClass psiClass) {
@@ -136,11 +149,9 @@ public class GeneratorUtils {
         return JavaPsiFacade.getElementFactory(psiClass.getProject()).createMethodFromText(setterSb.toString(), psiClass);
     }
 
-    public static PsiMethod generatePrivateNonStaticConstructor(PsiClass psiClass) {
-        Arrays.stream(psiClass.getConstructors())
-                .filter(c -> c.getParameterList().isEmpty())
-                .forEach(PsiMethod::delete);
-        PsiMethod parentClassConstructor = GeneratorUtils.generateConstructorForClass(psiClass);
+    public static PsiMethod generatePrivateNonStaticConstructor(PsiClass psiClass, List<PsiField> arguments) {
+        Arrays.stream(psiClass.getConstructors()).forEach(PsiMethod::delete);
+        PsiMethod parentClassConstructor = GeneratorUtils.generateConstructorForClass(psiClass, arguments);
         PsiUtil.setModifierProperty(parentClassConstructor, PsiModifier.PRIVATE, true);
         PsiUtil.setModifierProperty(parentClassConstructor, PsiModifier.STATIC, false);
         return parentClassConstructor;
