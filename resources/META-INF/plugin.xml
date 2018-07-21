@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>design.patterns.plugin</id>
     <name>Design Patterns IntelliJ IDEA Plugin</name>
-    <version>1.0.2</version>
+    <version>1.1.0</version>
     <vendor email="orestes.polyzos@gmail.com">Orestes Polyzos</vendor>
 
     <description>
@@ -32,7 +32,11 @@
     <change-notes>
         <![CDATA[
             <ul>
-                <li>Added support for "extends" classes in Factory Design Pattern</li>
+                <li>Updated Builder DP, so that it can now handle mandatory fields (if the user wants to).</li>
+                <li>Fixed bug in Builder DP, that would produce multiple constructors when ran again.</li>
+                <li>Fixed bug in Strategy/Factory DP, that would cause error, when running it in a class without package statement.</li>
+                <li>Fixed bug in Factory DP, that would produce multiple constructors when ran again.</li>
+                <li>Fixed bug in Factory DP, that would not always find all implementors of an interface.</li>
             </ul>
         ]]>
     </change-notes>
