@@ -27,7 +27,7 @@ public class StrategyPatternGenerator {
         PsiClass interfaceClass = generateInterfaceClass();
         PsiFile interfaceFile = psiClass.getContainingFile().getContainingDirectory().createFile(strategyName.concat(".java"));
         interfaceFile.add(interfaceClass);
-        interfaceFile.addAfter(psiPackageStatement, null);
+        if (psiPackageStatement != null) interfaceFile.addAfter(psiPackageStatement, null);
         JavaCodeStyleManager.getInstance(interfaceClass.getProject()).optimizeImports(interfaceFile);
         prepareImplementationClass();
     }
