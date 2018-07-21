@@ -45,6 +45,12 @@ In order to avoid some common importing errors (when it comes to intellij plugin
 * Run your new configuration!
 
 ## Release History
+* 1.1.0
+  * Updated Builder DP, so that it can now handle mandatory fields (if the user wants to).
+  * Fixed bug in Builder DP, that would produce multiple constructors when ran again.
+  * Fixed bug in Strategy/Factory DP, that would cause error, when running it in a class without package statement.
+  * Fixed bug in Factory DP, that would produce multiple constructors when ran again.
+  * Fixed bug in Factory DP, that would not always find all implementors of an interface.  
 * 1.0.1
   * Added Factory Design Pattern 
   * Fixed bug with package declaration in Strategy Design Pattern 
