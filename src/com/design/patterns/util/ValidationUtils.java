@@ -25,7 +25,7 @@ public class ValidationUtils {
         return true;
     }
 
-    public static boolean validateClassNameForDuplicate(PsiClass psiClass, String className, String message){
+    public static boolean validateClassNameForDuplicate(PsiClass psiClass, String className, String message) {
         if (Arrays.stream(psiClass.getContainingFile().getContainingDirectory().getFiles())
                 .filter(psiFile -> psiFile.getName().equals(className))
                 .collect(Collectors.toList()).size() > 0) {

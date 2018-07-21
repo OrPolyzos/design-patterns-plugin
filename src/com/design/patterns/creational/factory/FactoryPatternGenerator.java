@@ -2,16 +2,17 @@ package com.design.patterns.creational.factory;
 
 import com.design.patterns.creational.singleton.SingletonPatternGenerator;
 import com.design.patterns.util.FormatUtils;
-import com.design.patterns.util.GeneratorUtils;
+import com.design.patterns.util.PsiClassGeneratorUtils;
+import com.design.patterns.util.PsiMemberGeneratorUtils;
 import com.intellij.psi.*;
 import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class FactoryPatternGenerator {
+class FactoryPatternGenerator {
 
     private PsiClass psiClass;
     private PsiPackageStatement psiPackageStatement;
@@ -20,63 +21,64 @@ public class FactoryPatternGenerator {
     private String factoryClassName;
     private String enumClassName;
 
-    public FactoryPatternGenerator(PsiClass psiClass, PsiClass selectedInterface, List<PsiClass> selectedImplementors) {
+    FactoryPatternGenerator(PsiClass psiClass, PsiClass selectedInterface, String factoryName, List<PsiClass> selectedImplementors) {
         this.psiClass = psiClass;
         this.selectedInterface = selectedInterface;
         this.selectedImplementors = selectedImplementors;
-        this.factoryClassName = selectedInterface.getName() + "Factory";
-        this.enumClassName = selectedInterface.getName() + "Enum";
+        this.factoryClassName = factoryName + "Factory";
+        this.enumClassName = factoryName + "Enum";
         this.psiPackageStatement = ((PsiJavaFile) psiClass.getContainingFile()).getPackageStatement();
     }
 
-    public void generate() {
-        selectedImplementors.forEach(selectedImplementor -> selectedImplementor.add(GeneratorUtils.generateConstructorForClass(selectedImplementor, new ArrayList<>())));
-        PsiClass enumClass = generateEnumClass();
-        PsiClass factoryClass = generateFactoryClass();
+    void generate() {
+        selectedImplementors.forEach(selectedImplementor ->
+                {
+                    PsiMethod selectedImplementorConstructor = PsiMemberGeneratorUtils.generateConstructorForClass(selectedImplementor, new ArrayList<>());
+                    Arrays.stream(selectedImplementor.getConstructors())
+                            .filter(constructor -> constructor.getParameterList().isEmpty())
+                            .forEach(PsiMethod::delete);
+                    selectedImplementor.add(selectedImplementorConstructor);
+                }
+        );
+        List<String> enumNames = selectedImplementors.stream().map(PsiClass::getName).collect(Collectors.toList());
+        List<String> upperCaseEnumNames = enumNames.stream().map(FormatUtils::camelCaseToUpperCaseWithUnderScore).collect(Collectors.toList());
+        generateEnumClass(upperCaseEnumNames);
+        generateFactoryClass(enumNames);
     }
 
-    private PsiClass generateFactoryClass() {
-        PsiClass factoryClass = GeneratorUtils.generateClassForProjectWithName(psiClass.getProject(), factoryClassName);
-        generateFactoryMethodToClass(factoryClass);
+    private void generateEnumClass(List<String> upperCaseEnumNames) {
+        PsiClass enumClass = PsiClassGeneratorUtils.generateEnumClass(psiClass, enumClassName, upperCaseEnumNames);
+        PsiFile enumFile = psiClass.getContainingFile().getContainingDirectory().createFile(enumClassName.concat(".java"));
+        enumFile.add(enumClass);
+        if (psiPackageStatement != null) enumFile.addAfter(psiPackageStatement, null);
+        JavaCodeStyleManager.getInstance(enumClass.getProject()).optimizeImports(enumFile);
+    }
+
+
+    private void generateFactoryClass(List<String> enumNames) {
+        PsiClass factoryClass = PsiClassGeneratorUtils.generateClassForProjectWithName(psiClass.getProject(), factoryClassName);
+        factoryClass.add(generateFactoryMethod(factoryClass, enumNames));
         new SingletonPatternGenerator(factoryClass).generate();
         PsiFile factoryClassFile = psiClass.getContainingFile().getContainingDirectory().createFile(factoryClassName.concat(".java"));
         factoryClassFile.add(factoryClass);
         JavaCodeStyleManager.getInstance(factoryClass.getProject()).addImport((PsiJavaFile) factoryClassFile, selectedInterface);
-        factoryClassFile.addAfter(psiPackageStatement, null);
+        if (psiPackageStatement != null) factoryClassFile.addAfter(psiPackageStatement, null);
         JavaCodeStyleManager.getInstance(factoryClass.getProject()).optimizeImports(factoryClassFile);
-        return factoryClass;
     }
 
-    private PsiMethod generateFactoryMethodToClass(PsiClass factoryClass) {
-        List<String> enumNames = selectedImplementors.stream().map(PsiClass::getName).collect(Collectors.toList());
+    private PsiMethod generateFactoryMethod(PsiClass factoryClass, List<String> enumNames) {
         StringBuilder factoryMethodSb = new StringBuilder();
         String argumentName = FormatUtils.toLowerCaseFirstLetterString(enumClassName);
-        factoryMethodSb.append("public " + selectedInterface.getName() + " get" + selectedInterface.getName() + "(" + enumClassName + " " + argumentName + "){\n");
-        factoryMethodSb.append("\tswitch (" + argumentName + "){\n");
+        factoryMethodSb.append("public ").append(selectedInterface.getName()).append(" get").append(selectedInterface.getName()).append("(").append(enumClassName).append(" ").append(argumentName).append("){");
+        factoryMethodSb.append("switch (").append(argumentName).append("){");
         enumNames.forEach(eName -> {
-                    factoryMethodSb.append("\t\tcase " + FormatUtils.camelCaseToUpperCaseWithUnderScore(eName) + ": {\n");
-                    factoryMethodSb.append("\t\t\treturn new " + eName + "();\n");
-                    factoryMethodSb.append("\t\t}\n");
+                    factoryMethodSb.append("case ").append(FormatUtils.camelCaseToUpperCaseWithUnderScore(eName)).append(": {");
+                    factoryMethodSb.append("return new ").append(eName).append("();}");
                 }
         );
-        factoryMethodSb.append("\t\tdefault: {\n");
-        factoryMethodSb.append("\t\t\treturn null;\n");
-        factoryMethodSb.append("\t\t}\n");
-        factoryMethodSb.append("\t}\n");
-        factoryMethodSb.append("}\n");
-        PsiMethod factoryMethod = JavaPsiFacade.getElementFactory(factoryClass.getProject()).createMethodFromText(factoryMethodSb.toString(), factoryClass);
-        factoryClass.add(factoryMethod);
-        return factoryMethod;
+        factoryMethodSb.append("default: {return null;}}}");
+        return JavaPsiFacade.getElementFactory(factoryClass.getProject()).createMethodFromText(factoryMethodSb.toString(), factoryClass);
     }
 
-    private PsiClass generateEnumClass() {
-        List<String> enumNames = selectedImplementors.stream().map(e -> FormatUtils.camelCaseToUpperCaseWithUnderScore(Objects.requireNonNull(e.getName()))).collect(Collectors.toList());
-        PsiClass enumClass = GeneratorUtils.generateEnumClass(psiClass, enumClassName, enumNames);
-        PsiFile enumFile = psiClass.getContainingFile().getContainingDirectory().createFile(enumClassName.concat(".java"));
-        enumFile.add(enumClass);
-        enumFile.addAfter(psiPackageStatement, null);
-        JavaCodeStyleManager.getInstance(enumClass.getProject()).optimizeImports(enumFile);
-        return enumClass;
-    }
 
 }

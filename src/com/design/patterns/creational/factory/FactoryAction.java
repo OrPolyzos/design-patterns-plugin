@@ -1,13 +1,17 @@
 package com.design.patterns.creational.factory;
 
 import com.design.patterns.base.DesignPatternAction;
+import com.design.patterns.base.dialog.InputValueDialog;
+import com.design.patterns.base.dialog.MessageBoxDialog;
 import com.design.patterns.base.dialog.SelectStuffDialog;
-import com.design.patterns.util.GeneratorUtils;
+import com.design.patterns.util.PsiClassGeneratorUtils;
 import com.design.patterns.util.ValidationUtils;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.search.searches.ClassInheritorsSearch;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +19,10 @@ public class FactoryAction extends DesignPatternAction {
 
     private static final String FACTORY_DIALOG_TITLE = "Factory Design Pattern";
     private static final String FACTORY_INTERFACE_CHOICE_DIALOG_TEXT = "Based on interface/parent class:";
+    private static final String FACTORY_NAME_DIALOG_TEXT = "Give a name for the Factory and the Enum class:";
     private static final String FACTORY_IMPLEMENTORS_CHOICE_DIALOG_TEXT = "Implementors to include:";
+    private static final String EMPTY_NAME_ERROR_MESSAGE = "Cannot accept empty name.";
+    private static final String DUPLICATE_NAME_ERROR_MESSAGE = "There is already a file with the name: ";
     private static final String EMPTY_INTERFACES_LIST_ERROR_MESSAGE = "The class does not implement any interfaces or extends and classes.";
     private static final String EXACT_SIZE_INTERFACES_LIST_ERROR_MESSAGE = "You must choose exactly one interface or one parent class.";
     private static final String EMPTY_IMPLEMENTORS_LIST_ERROR_MESSAGE = "You must choose at least one implementor.";
@@ -23,39 +30,37 @@ public class FactoryAction extends DesignPatternAction {
     @Override
     public void actionPerformed(AnActionEvent anActionEvent) {
         PsiClass psiClass = getPsiClassFromContext(anActionEvent);
-        List<PsiClass> interfacesAndExtendsList = GeneratorUtils.getInterfacesAndExtends(psiClass);
+        List<PsiClass> interfacesAndExtendsList = PsiClassGeneratorUtils.getInterfacesAndExtends(psiClass);
         if (ValidationUtils.validateClassesListIfNonEmpty(psiClass, interfacesAndExtendsList, EMPTY_INTERFACES_LIST_ERROR_MESSAGE)) {
             SelectStuffDialog<PsiClass> factoryInterfaceChoiceDialog = new SelectStuffDialog<>(psiClass, interfacesAndExtendsList, candidateInterface -> true, FACTORY_DIALOG_TITLE, FACTORY_INTERFACE_CHOICE_DIALOG_TEXT);
             if (factoryInterfaceChoiceDialog.isOK()) {
                 List<PsiClass> selectedInterfaces = factoryInterfaceChoiceDialog.getSelectedStuff();
                 if (ValidationUtils.validateClassesListForExactSize(psiClass, selectedInterfaces, 1, EXACT_SIZE_INTERFACES_LIST_ERROR_MESSAGE)) {
                     PsiClass selectedInterface = selectedInterfaces.get(0);
-                    List<PsiClass> candidateImplementors = getCandidateImplementors(psiClass, selectedInterface);
-                    SelectStuffDialog<PsiClass> factoryImplementorsChoiceDialog = new SelectStuffDialog<>(psiClass, candidateImplementors, candidateImplementor -> true, FACTORY_DIALOG_TITLE, FACTORY_IMPLEMENTORS_CHOICE_DIALOG_TEXT);
-                    if (factoryImplementorsChoiceDialog.isOK() && ValidationUtils.validateClassesListIfNonEmpty(psiClass, factoryImplementorsChoiceDialog.getSelectedStuff(), EMPTY_IMPLEMENTORS_LIST_ERROR_MESSAGE)) {
-                        generateCode(psiClass, selectedInterface, factoryImplementorsChoiceDialog.getSelectedStuff());
+                    InputValueDialog factoryNameDialog = new InputValueDialog(psiClass, FACTORY_DIALOG_TITLE, FACTORY_NAME_DIALOG_TEXT);
+                    if (factoryNameDialog.isOK()) {
+                        String factoryName = factoryNameDialog.getInput();
+                        if (factoryName.isEmpty()) {
+                            new MessageBoxDialog(psiClass, EMPTY_NAME_ERROR_MESSAGE);
+                        } else if (ValidationUtils.validateClassNameForDuplicate(psiClass, factoryName + "Factory.java", DUPLICATE_NAME_ERROR_MESSAGE + factoryName + "Factory.java " + ".")
+                                && ValidationUtils.validateClassNameForDuplicate(psiClass, factoryName + "Enum.java", DUPLICATE_NAME_ERROR_MESSAGE + factoryName + "Enum.java " + ".")) {
+                            List<PsiClass> candidateImplementors = new ArrayList<>(ClassInheritorsSearch.search(selectedInterface).findAll());
+                            SelectStuffDialog<PsiClass> factoryImplementorsChoiceDialog = new SelectStuffDialog<>(psiClass, candidateImplementors, candidateImplementor -> true, FACTORY_DIALOG_TITLE, FACTORY_IMPLEMENTORS_CHOICE_DIALOG_TEXT);
+                            if (factoryImplementorsChoiceDialog.isOK() && ValidationUtils.validateClassesListIfNonEmpty(psiClass, factoryImplementorsChoiceDialog.getSelectedStuff(), EMPTY_IMPLEMENTORS_LIST_ERROR_MESSAGE)) {
+                                generateCode(psiClass, selectedInterface, factoryName, factoryImplementorsChoiceDialog.getSelectedStuff());
+                            }
+                        }
                     }
                 }
             }
         }
     }
 
-    private List<PsiClass> getCandidateImplementors(PsiClass psiClass, PsiClass selectedInterface) {
-        return GeneratorUtils.getAllClassesStartingWith(psiClass.getProject(), "")
-                .stream()
-                .filter(candidateImplementor ->
-                        GeneratorUtils.getInterfacesAndExtends(candidateImplementor).stream()
-                                .map(PsiClass::getName)
-                                .collect(Collectors.toList())
-                                .contains(selectedInterface.getName()))
-                .collect(Collectors.toList());
-    }
-
-    private void generateCode(PsiClass psiClass, PsiClass selectedInterface, List<PsiClass> selectedImplementors) {
+    private void generateCode(PsiClass psiClass, PsiClass selectedInterface, String factoryName, List<PsiClass> selectedImplementors) {
         new WriteCommandAction.Simple(psiClass.getProject(), psiClass.getContainingFile()) {
             @Override
             protected void run() {
-                new FactoryPatternGenerator(psiClass, selectedInterface, selectedImplementors).generate();
+                new FactoryPatternGenerator(psiClass, selectedInterface, factoryName, selectedImplementors).generate();
             }
         }.execute();
     }
