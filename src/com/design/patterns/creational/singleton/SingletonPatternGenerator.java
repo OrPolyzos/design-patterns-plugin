@@ -1,7 +1,7 @@
 package com.design.patterns.creational.singleton;
 
 import com.design.patterns.util.FormatUtils;
-import com.design.patterns.util.GeneratorUtils;
+import com.design.patterns.util.PsiMemberGeneratorUtils;
 import com.intellij.psi.*;
 import com.intellij.psi.util.PsiUtil;
 
@@ -33,8 +33,8 @@ public class SingletonPatternGenerator {
     }
 
     private void prepareParentClass() {
-        GeneratorUtils.changeConstructorsToPrivateNonStatic(psiClass);
-        psiClass.add(GeneratorUtils.generatePrivateNonStaticConstructor(psiClass, new ArrayList<>()));
+        PsiMemberGeneratorUtils.changeConstructorsToPrivateNonStatic(psiClass);
+        psiClass.add(PsiMemberGeneratorUtils.generatePrivateNonStaticConstructor(psiClass, new ArrayList<>()));
         Arrays.stream(psiClass.getFields())
                 .filter(field -> Objects.equals(field.getName(), instanceFieldName))
                 .forEach(PsiField::delete);

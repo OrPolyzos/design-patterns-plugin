@@ -2,7 +2,8 @@ package com.design.patterns.creational.builder;
 
 import com.design.patterns.base.utilities.PsiModifierMapEnum;
 import com.design.patterns.base.utilities.PsiModifierMapFactory;
-import com.design.patterns.util.GeneratorUtils;
+import com.design.patterns.util.PsiClassGeneratorUtils;
+import com.design.patterns.util.PsiMemberGeneratorUtils;
 import com.intellij.psi.*;
 import one.util.streamex.Joining;
 
@@ -38,7 +39,7 @@ class BuilderPatternGenerator {
     }
 
     private void prepareParentClass() {
-        includedFields.forEach(includedField -> GeneratorUtils.modifyPsiMember(includedField, privateNonStaticMap));
+        includedFields.forEach(includedField -> PsiMemberGeneratorUtils.modifyPsiMember(includedField, privateNonStaticMap));
         generateConstructorForParentClass();
         generateGettersAndSettersForParentClass();
         deletePreviousInstanceOfBuilderClass();
@@ -52,14 +53,14 @@ class BuilderPatternGenerator {
 
     private void generateConstructorForParentClass() {
         Arrays.stream(parentClass.getConstructors()).forEach(PsiMember::delete);
-        PsiMethod constructorForParentClass = GeneratorUtils.generateConstructorForClass(parentClass, mandatoryFields);
-        GeneratorUtils.modifyPsiMember(constructorForParentClass, privateNonStaticMap);
+        PsiMethod constructorForParentClass = PsiMemberGeneratorUtils.generateConstructorForClass(parentClass, mandatoryFields);
+        PsiMemberGeneratorUtils.modifyPsiMember(constructorForParentClass, privateNonStaticMap);
         parentClass.add(constructorForParentClass);
     }
 
     private void generateGettersAndSettersForParentClass() {
-        List<PsiMethod> gettersAndSetters = GeneratorUtils.generateGettersAndSettersForClass(includedFields, parentClass);
-        gettersAndSetters.forEach(getterOrSetter -> GeneratorUtils.modifyPsiMember(getterOrSetter, publicNonStaticMap));
+        List<PsiMethod> gettersAndSetters = PsiMemberGeneratorUtils.generateGettersAndSettersForClass(includedFields, parentClass);
+        gettersAndSetters.forEach(getterOrSetter -> PsiMemberGeneratorUtils.modifyPsiMember(getterOrSetter, publicNonStaticMap));
         List<String> gettersAndSettersNames = gettersAndSetters.stream().map(PsiMethod::getName).collect(Collectors.toList());
         Arrays.stream(parentClass.getMethods())
                 .filter(parentClassMethod -> gettersAndSettersNames.contains(parentClassMethod.getName()))
@@ -79,8 +80,8 @@ class BuilderPatternGenerator {
     }
 
     private PsiClass generateBuilderClass() {
-        PsiClass builderClass = GeneratorUtils.generateClassForProjectWithName(parentClass.getProject(), BUILDER_CLASS_NAME);
-        GeneratorUtils.modifyPsiMember(builderClass, publicStaticFinalMap);
+        PsiClass builderClass = PsiClassGeneratorUtils.generateClassForProjectWithName(parentClass.getProject(), BUILDER_CLASS_NAME);
+        PsiMemberGeneratorUtils.modifyPsiMember(builderClass, publicStaticFinalMap);
         return builderClass;
     }
 
@@ -88,13 +89,13 @@ class BuilderPatternGenerator {
         List<PsiField> builderFields = includedFields.stream()
                 .map(includedField -> JavaPsiFacade.getElementFactory(parentClass.getProject()).createField(Objects.requireNonNull(includedField.getName()), includedField.getType()))
                 .collect(Collectors.toList());
-        builderFields.forEach(builderField -> GeneratorUtils.modifyPsiMember(builderField, privateNonStaticMap));
+        builderFields.forEach(builderField -> PsiMemberGeneratorUtils.modifyPsiMember(builderField, privateNonStaticMap));
         return builderFields;
     }
 
     private PsiMethod generateBuilderConstructor(PsiClass builderClass) {
-        PsiMethod builderConstructor = GeneratorUtils.generateConstructorForClass(builderClass, mandatoryFields);
-        GeneratorUtils.modifyPsiMember(builderConstructor, privateNonStaticMap);
+        PsiMethod builderConstructor = PsiMemberGeneratorUtils.generateConstructorForClass(builderClass, mandatoryFields);
+        PsiMemberGeneratorUtils.modifyPsiMember(builderConstructor, privateNonStaticMap);
         return builderConstructor;
     }
 
