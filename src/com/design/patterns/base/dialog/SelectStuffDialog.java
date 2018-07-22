@@ -1,5 +1,6 @@
 package com.design.patterns.base.dialog;
 
+import com.design.patterns.base.dialog.ui.CustomListCellRenderer;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.psi.PsiClass;
@@ -15,12 +16,14 @@ import java.util.stream.Collectors;
 
 public class SelectStuffDialog<T> extends DialogWrapper {
 
+    private int listSelectionMode;
     private LabeledComponent<JPanel> component;
     private ToolbarDecorator toolbarDecorator;
     private JBList<T> stuffToShow;
 
-    public SelectStuffDialog(PsiClass psiClass, Collection<T> stuffCollection, Predicate<T> stuffPredicate, String title, String componentText) {
+    public SelectStuffDialog(PsiClass psiClass, Collection<T> stuffCollection, Predicate<T> stuffPredicate, String title, String componentText, int listSelectionMode) {
         super(psiClass.getProject());
+        this.listSelectionMode = listSelectionMode;
         setTitle(title);
         stuffToShow = getStuffBasedOnPredicate(stuffCollection, stuffPredicate);
         createDecorator(componentText);
@@ -54,7 +57,8 @@ public class SelectStuffDialog<T> extends DialogWrapper {
                 .collect(Collectors.toList());
         CollectionListModel<T> collectionListModel = new CollectionListModel<>(filteredStuff);
         JBList<T> jbStuff = new JBList<>(collectionListModel);
-        jbStuff.setCellRenderer(new DefaultListCellRenderer());
+        jbStuff.setSelectionMode(listSelectionMode);
+        jbStuff.setCellRenderer(new CustomListCellRenderer());
         return jbStuff;
     }
 }

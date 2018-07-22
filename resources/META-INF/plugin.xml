@@ -32,11 +32,7 @@
     <change-notes>
         <![CDATA[
             <ul>
-                <li>Updated Builder DP, so that it can now handle mandatory fields (if the user wants to).</li>
-                <li>Fixed bug in Builder DP, that would produce multiple constructors when ran again.</li>
-                <li>Fixed bug in Strategy/Factory DP, that would cause error, when running it in a class without package statement.</li>
-                <li>Fixed bug in Factory DP, that would produce multiple constructors when ran again.</li>
-                <li>Fixed bug in Factory DP, that would not always find all implementors of an interface.</li>
+                <li>Added custom renderer for List Items</li>
             </ul>
         ]]>
     </change-notes>
@@ -44,16 +40,9 @@
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
     <idea-version since-build="173.0"/>
 
-    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
-    <!-- uncomment to enable plugin in all products
-    <depends>com.intellij.modules.lang</depends>
-    -->
-
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
     </extensions>
-
 
     <actions>
         <group id="design-patterns-group" text="Design Patterns" popup="true">

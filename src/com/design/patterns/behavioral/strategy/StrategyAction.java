@@ -10,6 +10,7 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiMethod;
 
+import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class StrategyAction extends DesignPatternAction {
             if (strategyName.isEmpty()) {
                 new MessageBoxDialog(psiClass, EMPTY_NAME_ERROR_MESSAGE);
             } else if (ValidationUtils.validateClassNameForDuplicate(psiClass, strategyName, DUPLICATE_NAME_ERROR_MESSAGE + strategyName + ".")) {
-                SelectStuffDialog<PsiMethod> strategyMethodsDialog = new SelectStuffDialog<>(psiClass, Arrays.asList(psiClass.getMethods()), psiMethod -> !psiMethod.isConstructor(), STRATEGY_DIALOG_TITLE, STRATEGY_METHODS_DIALOG_TEXT);
+                SelectStuffDialog<PsiMethod> strategyMethodsDialog = new SelectStuffDialog<>(psiClass, Arrays.asList(psiClass.getMethods()), psiMethod -> !psiMethod.isConstructor(), STRATEGY_DIALOG_TITLE, STRATEGY_METHODS_DIALOG_TEXT, ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
                 if (strategyMethodsDialog.isOK()) {
                     generateCode(psiClass, strategyName, strategyMethodsDialog.getSelectedStuff());
                 }
