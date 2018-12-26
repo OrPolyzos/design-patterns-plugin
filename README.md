@@ -1,5 +1,6 @@
 # Design Patterns IntelliJ IDEA Plugin
-This plugin is meant to provide on the fly implementation of various design patterns. <br/>
+This plugin is meant to provide on the fly implementation of various design patterns.
+<br/>
 You can download it directly from IntelliJ IDEA or from https://plugins.jetbrains.com/plugin/10856-design-patterns-plugin
 
 ## Currently supported design patterns
@@ -18,33 +19,19 @@ Assuming you have already installed the plugin, you can use it just by right-cli
 
 ## Getting started
 In order to avoid some common importing errors (when it comes to intellij plugin development), please follow the steps listed below.<br/>
-* Open the project using IntelliJ IDEA
-  * When asked choose an `.idea` based project
+* Open the project using IntelliJ IDEA (Community or Ultimate)
 * In `Project Structure` -> `Project Settings` -> `Project` -> `Project SDK` create a new `IntellJ Platform Plugin SDK`</br>
-  * When asked for directory, use your IntelliJ IDEA installation directory 
+  * When asked for directory, use your IntelliJ IDEA installation directory.
+  * Note that you will negit stated IntelliJ IDEA Community in order to be able to properly debug the SDK's core code. If no debug is required though, Ultimate will work just fine as well.
 * In `Project Language Level` choose `8 - Lambdas, type annotations etc` 
-* In `Project compiler output` choose the out folder (for example `C:\Users\Design-Patterns-Intellij-IDEA-Plugin\out`
-* Edit the generated .iml file with the following content so that IntelliJ understands the project is a plugin module
-```
-<?xml version="1.0" encoding="UTF-8"?>
-<module type="PLUGIN_MODULE" version="4">
-  <component name="DevKit.ModuleBuildProperties" url="file://$MODULE_DIR$/resources/META-INF/plugin.xml" />
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
-    <exclude-output />
-    <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/resources" type="java-resource" />
-    </content>
-    <orderEntry type="inheritedJdk" />
-    <orderEntry type="sourceFolder" forTests="false" />
-  </component>
-</module>
-```
-* Build the project
-* In `Edit Configurations` create a new `Plugin Configuration` (if not already configured)
-* Run your new configuration!
+* In `Project compiler output` choose the out folder (for example `C:\Users\design-patterns\out`
+* Use `gradlew runIde` to run the plugin
 
 ## Release History
+* <strong>2.0.0</strong>
+  * Migrated project to use Gradle.
+  * Fixed the bug in DefaultActionGroup creation that was causing a DuplicateActionException.
+  * Major code refactoring.
 * <strong>1.1.0</strong>
   * Updated Builder DP, so that it can now handle mandatory fields (if the user wants to).
   * Fixed bug in Builder DP, that would produce multiple constructors when ran again.
@@ -62,4 +49,3 @@ In order to avoid some common importing errors (when it comes to intellij plugin
 
 ## Authors
 * **Orestes Polyzos** - *Initial work* - [OrPolyzos](https://github.com/OrPolyzos)
-* See also the list of [contributors](https://github.com/OrPolyzos/Design-Patterns-Intellij-IDEA-Plugin/contributors) who participated in this project.
