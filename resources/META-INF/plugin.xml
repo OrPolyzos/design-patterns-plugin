@@ -67,6 +67,10 @@
                 description="Implements Factory Design Pattern">
             <add-to-group group-id="design-patterns-group" anchor="after" relative-to-action="strategyDesignPattern"/>
         </action>
+        <action id="mementoDesignPattern" class="com.design.patterns.behavioral.memento.MementoAction" text="Memento"
+                description="Implements Memento Design Pattern">
+            <add-to-group group-id="design-patterns-group" anchor="after" relative-to-action="factoryDesignPattern"/>
+        </action>
     </actions>
 
 

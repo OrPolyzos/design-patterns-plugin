@@ -2,6 +2,8 @@ package com.design.patterns.util;
 
 import com.design.patterns.base.dialog.MessageBoxDialog;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiField;
+import com.intellij.psi.PsiMember;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +13,14 @@ public class ValidationUtils {
 
     public static boolean validateClassesListIfNonEmpty(PsiClass psiClass, List<PsiClass> classesList, String message) {
         if (classesList.isEmpty()) {
+            new MessageBoxDialog(psiClass, message);
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean validatePsiFieldListIfNonEmpty(PsiClass psiClass, List<PsiField> psiFieldList, String message) {
+        if (psiFieldList.isEmpty()) {
             new MessageBoxDialog(psiClass, message);
             return false;
         }
