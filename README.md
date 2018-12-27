@@ -22,16 +22,17 @@ In order to avoid some common importing errors (when it comes to intellij plugin
 * Open the project using IntelliJ IDEA (Community or Ultimate)
 * In `Project Structure` -> `Project Settings` -> `Project` -> `Project SDK` create a new `IntellJ Platform Plugin SDK`</br>
   * When asked for directory, use your IntelliJ IDEA installation directory.
-  * Note that you will negit stated IntelliJ IDEA Community in order to be able to properly debug the SDK's core code. If no debug is required though, Ultimate will work just fine as well.
+  * Note that you will need IntelliJ IDEA Community in order to be able to properly debug the SDK's core code. If no debug is required though, Ultimate will work just fine as well.
 * In `Project Language Level` choose `8 - Lambdas, type annotations etc` 
 * In `Project compiler output` choose the out folder (for example `C:\Users\design-patterns\out`
 * Use `gradlew runIde` to run the plugin
 
 ## Release History
 * <strong>2.0.0</strong>
-  * Migrated project to use Gradle.
-  * Fixed the bug in DefaultActionGroup creation that was causing a DuplicateActionException.
-  * Major code refactoring.
+  * Fixes bug that was causing 'ActionDuplicationException' during IDEA launch
+  * Migrates plugin's build tool from DevKit to Gradle
+  * Changes Singleton and Builder to use resource templates instead of String literals
+  * Adds support for IDEA builds from '145.20' to '183.*'
 * <strong>1.1.0</strong>
   * Updated Builder DP, so that it can now handle mandatory fields (if the user wants to).
   * Fixed bug in Builder DP, that would produce multiple constructors when ran again.

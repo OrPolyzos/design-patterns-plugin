@@ -3,12 +3,13 @@
     <name>Design Patterns</name>
     <vendor email="orestes.polyzos@gmail.com" url="https://www.linkedin.com/in/orestes-polyzos/">Orestes Polyzos</vendor>
 
+    <idea-version since-build="145.20" until-build="183.*"/>
+
     <description>
         <![CDATA[
-            <h2>Provides on the fly implementation of various design patterns</h3>
-            <br/>
-            <h4>Currently supported design patterns</hr>
-            <hr/>
+            <h2>Provides on the fly implementation of various design patterns based on user's code</h2>
+            <p>More information can be found <a href="https://github.com/OrPolyzos/design-patterns-plugin">here</a>.</p>
+            <h3>Currently supported design patterns</h3>
             <ul>
                 <li>Behavioral</li>
                 <ul>
@@ -16,23 +17,22 @@
                 </ul>
                 <li>Creational</li>
                 <ul>
-                    <li>Builder</li>
-                    <ul>
-                        <li>Inner</li>
-                    </ul>
+                    <li>Builder (Inner)</li>
                     <li>Factory</li>
                     <li>Singleton</li>
                 </ul>
-                <li>Structural</li>
             </ul>
         ]]>
     </description>
 
-    <idea-version since-build="162"/>
-
     <change-notes>
         <![CDATA[
-            <strong>Fixes error with duplicate action exception</strong>
+            <ul>
+                <li>Fixes bug that was causing 'ActionDuplicationException' during IDEA launch</li>
+                <li>Migrates plugin's build tool from DevKit to Gradle</li>
+                <li>Changes Singleton and Builder to use resource templates instead of String literals</li>
+                <li>Adds support for IDEA builds from '145.20' to '183.*'</li>
+            </ul>
         ]]>
     </change-notes>
 

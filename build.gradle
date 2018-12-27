@@ -2,15 +2,14 @@ buildscript {
     repositories {
         mavenCentral()
         maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots/"
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
         }
         maven {
             url 'http://dl.bintray.com/jetbrains/intellij-plugin-service'
         }
-
     }
     dependencies {
-        classpath "org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.5.0-SNAPSHOT"
+        classpath 'org.jetbrains.intellij.plugins:gradle-intellij-plugin:0.5.0-SNAPSHOT'
     }
 }
 
@@ -19,12 +18,29 @@ plugins {
     id 'org.jetbrains.intellij' version '0.4.0'
 }
 
+apply plugin: 'java'
 apply plugin: 'org.jetbrains.intellij'
 
 group 'ore.plugins.idea'
 version '2.0.0'
 
-sourceCompatibility = 1.8
+sourceCompatibility = javaVersion
+targetCompatibility = javaVersion
+
+tasks.withType(JavaCompile) {
+    options.encoding = projectEncoding
+}
+
+intellij {
+    updateSinceUntilBuild false
+}
+
+publishPlugin {
+    username publishUsername
+    password publishPassword
+    channels publishChannels.split(',')
+    host publishHost
+}
 
 repositories {
     mavenCentral()
@@ -32,15 +48,4 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-}
-
-intellij {
-    version '2018.3.2'
-}
-
-patchPluginXml {
-    changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>
-      """
 }

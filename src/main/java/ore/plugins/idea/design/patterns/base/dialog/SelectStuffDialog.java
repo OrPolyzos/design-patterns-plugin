@@ -19,7 +19,7 @@ public class SelectStuffDialog<T> extends DialogWrapper {
     private int listSelectionMode;
     private LabeledComponent<JPanel> component;
     private ToolbarDecorator toolbarDecorator;
-    private JBList<T> stuffToShow;
+    private JBList stuffToShow;
 
     public SelectStuffDialog(PsiClass psiClass, Collection<T> stuffCollection, Predicate<T> stuffPredicate, String title, String componentText, int listSelectionMode) {
         super(psiClass.getProject());
@@ -51,12 +51,12 @@ public class SelectStuffDialog<T> extends DialogWrapper {
         component = LabeledComponent.create(toolbarDecorator.createPanel(), componentText);
     }
 
-    private JBList<T> getStuffBasedOnPredicate(Collection<T> stuffCollection, Predicate<T> predicateForStuffToKeep) {
+    private JBList getStuffBasedOnPredicate(Collection<T> stuffCollection, Predicate<T> predicateForStuffToKeep) {
         Collection<T> filteredStuff = stuffCollection.stream()
                 .filter(predicateForStuffToKeep)
                 .collect(Collectors.toList());
         CollectionListModel<T> collectionListModel = new CollectionListModel<>(filteredStuff);
-        JBList<T> jbStuff = new JBList<>(collectionListModel);
+        JBList jbStuff = new JBList(collectionListModel);
         jbStuff.setSelectionMode(listSelectionMode);
         jbStuff.setCellRenderer(new CustomListCellRenderer());
         return jbStuff;

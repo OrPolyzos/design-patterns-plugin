@@ -50,7 +50,7 @@ public class StrategyPatternGenerator {
         PsiJavaCodeReferenceElement psiJavaCodeReferenceElement =
                 JavaPsiFacade.getElementFactory(psiClass.getProject()).createReferenceFromText(strategyName, psiClass);
         if (Arrays.stream(Objects.requireNonNull(psiClass.getImplementsList()).getReferencedTypes())
-                .filter(imp -> imp.getName().contains(strategyName))
+                .filter(imp -> imp.getClassName().contains(strategyName))
                 .collect(Collectors.toList()).size() > 0) return;
         Objects.requireNonNull(psiClass.getImplementsList()).add(psiJavaCodeReferenceElement);
     }

@@ -1,5 +1,6 @@
 package ore.plugins.idea.design.patterns.creational.factory;
 
+import com.intellij.navigation.NavigationItem;
 import com.intellij.psi.JavaPsiFacade;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiFile;
@@ -40,13 +41,17 @@ class FactoryPatternGenerator {
                 {
                     PsiMethod selectedImplementorConstructor = PsiMemberGeneratorUtils.generateConstructorForClass(selectedImplementor, new ArrayList<>());
                     Arrays.stream(selectedImplementor.getConstructors())
-                            .filter(constructor -> constructor.getParameterList().isEmpty())
+                            .filter(constructor -> constructor.getParameterList().getParametersCount() == 0)
                             .forEach(PsiMethod::delete);
                     selectedImplementor.add(selectedImplementorConstructor);
                 }
         );
-        List<String> enumNames = selectedImplementors.stream().map(PsiClass::getName).collect(Collectors.toList());
-        List<String> upperCaseEnumNames = enumNames.stream().map(FormatUtils::camelCaseToUpperCaseWithUnderScore).collect(Collectors.toList());
+        List<String> enumNames = selectedImplementors.stream()
+                .map(NavigationItem::getName)
+                .collect(Collectors.toList());
+        List<String> upperCaseEnumNames = enumNames.stream()
+                .map(FormatUtils::camelCaseToUpperCaseWithUnderScore)
+                .collect(Collectors.toList());
         generateEnumClass(upperCaseEnumNames);
         generateFactoryClass(enumNames);
     }
