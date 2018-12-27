@@ -1,11 +1,16 @@
 package ore.plugins.idea.design.patterns.creational.factory;
 
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiJavaFile;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiPackageStatement;
+import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 import ore.plugins.idea.design.patterns.creational.singleton.SingletonPatternGenerator;
 import ore.plugins.idea.design.patterns.util.FormatUtils;
 import ore.plugins.idea.design.patterns.util.PsiClassGeneratorUtils;
 import ore.plugins.idea.design.patterns.util.PsiMemberGeneratorUtils;
-import com.intellij.psi.*;
-import com.intellij.psi.codeStyle.JavaCodeStyleManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +55,10 @@ class FactoryPatternGenerator {
         PsiClass enumClass = PsiClassGeneratorUtils.generateEnumClass(psiClass, enumClassName, upperCaseEnumNames);
         PsiFile enumFile = psiClass.getContainingFile().getContainingDirectory().createFile(enumClassName.concat(".java"));
         enumFile.add(enumClass);
+        fixPackageStatement(enumClass, enumFile);
+    }
+
+    private void fixPackageStatement(PsiClass enumClass, PsiFile enumFile) {
         if (psiPackageStatement != null) enumFile.addAfter(psiPackageStatement, null);
         JavaCodeStyleManager.getInstance(enumClass.getProject()).optimizeImports(enumFile);
     }
@@ -58,12 +67,11 @@ class FactoryPatternGenerator {
     private void generateFactoryClass(List<String> enumNames) {
         PsiClass factoryClass = PsiClassGeneratorUtils.generateClassForProjectWithName(psiClass.getProject(), factoryClassName);
         factoryClass.add(generateFactoryMethod(factoryClass, enumNames));
-        new SingletonPatternGenerator(factoryClass).generate();
+        new SingletonPatternGenerator().generate(factoryClass);
         PsiFile factoryClassFile = psiClass.getContainingFile().getContainingDirectory().createFile(factoryClassName.concat(".java"));
         factoryClassFile.add(factoryClass);
         JavaCodeStyleManager.getInstance(factoryClass.getProject()).addImport((PsiJavaFile) factoryClassFile, selectedInterface);
-        if (psiPackageStatement != null) factoryClassFile.addAfter(psiPackageStatement, null);
-        JavaCodeStyleManager.getInstance(factoryClass.getProject()).optimizeImports(factoryClassFile);
+        fixPackageStatement(factoryClass, factoryClassFile);
     }
 
     private PsiMethod generateFactoryMethod(PsiClass factoryClass, List<String> enumNames) {

@@ -6,7 +6,10 @@ import com.intellij.psi.PsiClass;
 import ore.plugins.idea.design.patterns.base.DesignPatternAction;
 import org.jetbrains.annotations.NotNull;
 
+
 public class SingletonAction extends DesignPatternAction {
+
+    private SingletonPatternGenerator singletonPatternGenerator = new SingletonPatternGenerator();
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
@@ -21,6 +24,6 @@ public class SingletonAction extends DesignPatternAction {
     }
 
     private void generateCode(PsiClass psiClass) {
-        WriteCommandAction.runWriteCommandAction(psiClass.getProject(), () -> new SingletonPatternGenerator(psiClass).generate());
+        WriteCommandAction.runWriteCommandAction(psiClass.getProject(), () -> singletonPatternGenerator.generate(psiClass));
     }
 }

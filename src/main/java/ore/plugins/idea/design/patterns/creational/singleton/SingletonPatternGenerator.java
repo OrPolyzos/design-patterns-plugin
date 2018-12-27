@@ -1,57 +1,65 @@
 package ore.plugins.idea.design.patterns.creational.singleton;
 
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiField;
+import com.intellij.psi.PsiMember;
+import com.intellij.psi.PsiMethod;
+import ore.plugins.idea.design.patterns.base.TemplateReader;
+import ore.plugins.idea.design.patterns.base.utilities.PsiMemberModifierField;
 import ore.plugins.idea.design.patterns.util.FormatUtils;
 import ore.plugins.idea.design.patterns.util.PsiMemberGeneratorUtils;
-import com.intellij.psi.*;
-import com.intellij.psi.util.PsiUtil;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Objects;
 
-public class SingletonPatternGenerator {
+public class SingletonPatternGenerator implements TemplateReader {
 
-    private PsiClass psiClass;
-    private String instanceFieldName;
+    private static final String INSTANCE_METHOD_TEMPLATE_PATH = "/templates/creational/singleton/instance-method";
 
-    public SingletonPatternGenerator(PsiClass psiClass) {
-        this.psiClass = psiClass;
-        this.instanceFieldName = FormatUtils.toLowerCaseFirstLetterString(Objects.requireNonNull(psiClass.getName()).concat("Instance"));
+    private static final String INSTANCE_FIELD_SUFFIX = "Instance";
+    private static final String INSTANCE_METHOD_NAME = String.format("get%s", INSTANCE_FIELD_SUFFIX);
+
+    private String instanceMethodTemplate = getTemplate(INSTANCE_METHOD_TEMPLATE_PATH);
+
+    public void generate(@NotNull PsiClass psiClass) {
+        String instanceFieldName = FormatUtils.toLowerCaseFirstLetterString(Objects.requireNonNull(psiClass.getName()).concat(INSTANCE_FIELD_SUFFIX));
+        deleteRelated(psiClass, instanceFieldName);
+        psiClass.add(generatePrivateConstructor(psiClass));
+        psiClass.add(generateInstanceField(psiClass, instanceFieldName));
+        psiClass.add(generateInstanceMethod(psiClass, instanceFieldName));
     }
 
-    public void generate() {
-        prepareParentClass();
-        psiClass.add(generateGetInstanceField());
-        psiClass.add(generateGetInstanceMethod());
-    }
-
-    private PsiField generateGetInstanceField() {
-        PsiField getInstanceField = JavaPsiFacade.getElementFactory(psiClass.getProject()).createField(instanceFieldName, JavaPsiFacade.getInstance(psiClass.getProject()).getElementFactory().createType(psiClass));
-        PsiUtil.setModifierProperty(getInstanceField, PsiModifier.PRIVATE, true);
-        PsiUtil.setModifierProperty(getInstanceField, PsiModifier.STATIC, true);
-        return getInstanceField;
-    }
-
-    private void prepareParentClass() {
-        PsiMemberGeneratorUtils.changeConstructorsToPrivateNonStatic(psiClass);
-        psiClass.add(PsiMemberGeneratorUtils.generatePrivateNonStaticConstructor(psiClass, new ArrayList<>()));
+    private void deleteRelated(PsiClass psiClass, String instanceFieldName) {
+        Arrays.stream(psiClass.getConstructors())
+                .forEach(PsiMember::delete);
         Arrays.stream(psiClass.getFields())
-                .filter(field -> Objects.equals(field.getName(), instanceFieldName))
-                .forEach(PsiField::delete);
+                .filter(member -> member.getName() != null && member.getName().equals(instanceFieldName))
+                .forEach(PsiMember::delete);
         Arrays.stream(psiClass.getMethods())
-                .filter(m -> m.getName().equals("getInstance"))
-                .forEach(PsiMethod::delete);
+                .filter(member -> member.getName().equals(INSTANCE_METHOD_NAME))
+                .forEach(PsiMember::delete);
     }
 
-    private PsiMethod generateGetInstanceMethod() {
-        StringBuilder getInstanceMethodSb = new StringBuilder();
-        getInstanceMethodSb.append("public static ").append(psiClass.getName()).append(" getInstance() {\n");
-        getInstanceMethodSb.append("if (").append(instanceFieldName).append(" == null){\n");
-        getInstanceMethodSb.append(instanceFieldName).append(" = ").append("new ").append(psiClass.getName()).append("();\n");
-        getInstanceMethodSb.append("}");
-        getInstanceMethodSb.append("return ").append(instanceFieldName).append(";\n");
-        getInstanceMethodSb.append("}");
-        return JavaPsiFacade.getElementFactory(psiClass.getProject()).createMethodFromText(getInstanceMethodSb.toString(), psiClass);
+    private PsiElement generatePrivateConstructor(PsiClass psiClass) {
+        PsiMethod constructor = PsiMemberGeneratorUtils.generateConstructorForClass(psiClass, Collections.emptyList());
+        PsiMemberModifierField.PRIVATE.applyModifier(constructor);
+        return constructor;
     }
 
+    private PsiField generateInstanceField(PsiClass psiClass, String instanceFieldName) {
+        PsiField instanceField = JavaPsiFacade.getElementFactory(psiClass.getProject()).createField(instanceFieldName, JavaPsiFacade.getInstance(psiClass.getProject()).getElementFactory().createType(psiClass));
+        PsiMemberModifierField.PRIVATE_STATIC.applyModifier(instanceField);
+        return instanceField;
+    }
+
+    private PsiMethod generateInstanceMethod(PsiClass psiClass, String instanceFieldName) {
+        String instanceMethodContent = String.format(instanceMethodTemplate, psiClass.getName(), INSTANCE_METHOD_NAME, instanceFieldName, instanceFieldName, psiClass.getName(), instanceFieldName);
+        PsiMethod instanceMethod = JavaPsiFacade.getElementFactory(psiClass.getProject()).createMethodFromText(instanceMethodContent, psiClass);
+        PsiMemberModifierField.PUBLIC_STATIC_SYNCHRONIZED.applyModifier(instanceMethod);
+        return instanceMethod;
+    }
 }

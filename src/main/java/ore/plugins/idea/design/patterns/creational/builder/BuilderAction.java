@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
+import com.intellij.psi.PsiModifier;
 import ore.plugins.idea.design.patterns.base.DesignPatternAction;
 import ore.plugins.idea.design.patterns.base.dialog.SelectStuffDialog;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +28,15 @@ public class BuilderAction extends DesignPatternAction {
             if (mandatoryFieldsDialog.isOK()) {
                 generateCode(psiClass, includedFieldsDialog.getSelectedStuff(), mandatoryFieldsDialog.getSelectedStuff());
             }
+        }
+    }
+
+    @Override
+    public void update(@NotNull AnActionEvent anActionEvent) {
+        super.update(anActionEvent);
+        PsiClass psiClass = getPsiClassFromContext(anActionEvent);
+        if (psiClass.getModifierList() != null && psiClass.getModifierList().hasModifierProperty(PsiModifier.STATIC)){
+            anActionEvent.getPresentation().setEnabled(false);
         }
     }
 

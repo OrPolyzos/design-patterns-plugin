@@ -1,0 +1,5 @@
+%s build() {
+    %s %s = new %s(%s);
+    %s
+    return %s;
+}

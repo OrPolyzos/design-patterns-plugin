@@ -1,0 +1,6 @@
+%s %s() {
+    if (%s == null) {
+        %s = new %s();
+    }
+    return %s;
+}

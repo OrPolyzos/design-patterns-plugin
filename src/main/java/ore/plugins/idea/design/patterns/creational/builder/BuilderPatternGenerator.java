@@ -1,34 +1,47 @@
 package ore.plugins.idea.design.patterns.creational.builder;
 
-import ore.plugins.idea.design.patterns.base.utilities.PsiModifierMapEnum;
-import ore.plugins.idea.design.patterns.base.utilities.PsiModifierMapFactory;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiField;
+import com.intellij.psi.PsiMember;
+import com.intellij.psi.PsiMethod;
+import ore.plugins.idea.design.patterns.base.TemplateReader;
+import ore.plugins.idea.design.patterns.base.utilities.PsiMemberModifierField;
 import ore.plugins.idea.design.patterns.util.PsiClassGeneratorUtils;
 import ore.plugins.idea.design.patterns.util.PsiMemberGeneratorUtils;
-import com.intellij.psi.*;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static ore.plugins.idea.design.patterns.util.FormatUtils.toLowerCaseFirstLetterString;
 import static ore.plugins.idea.design.patterns.util.FormatUtils.toUpperCaseFirstLetterString;
 
-class BuilderPatternGenerator {
+class BuilderPatternGenerator implements TemplateReader {
 
-    private static final Map<String, Boolean> publicNonStaticMap = PsiModifierMapFactory.getInstance().getPsiModifierMap(PsiModifierMapEnum.PUBLIC_NON_STATIC);
-    private static final Map<String, Boolean> privateNonStaticMap = PsiModifierMapFactory.getInstance().getPsiModifierMap(PsiModifierMapEnum.PRIVATE_NON_STATIC);
-    private static final Map<String, Boolean> publicStaticFinalMap = PsiModifierMapFactory.getInstance().getPsiModifierMap(PsiModifierMapEnum.PUBLIC_STATIC_FINAL);
+    private static final String BUILDER_ACCESS_METHOD_TEMPLATE = "/templates/creational/builder/builder-access-method";
+    private static final String BUILDER_BUILD_METHOD_TEMPLATE = "/templates/creational/builder/build-method";
+    private static final String BUILDER_WITH_METHOD_TEMPLATE = "/templates/creational/builder/builder-with-method";
+    private static final String BUILDER_BUILD_METHOD_SET_TEMPLATE = "%s.set%s(%s);";
+    private static final String BUILDER_CLASS_NAME_SUFFIX = "Builder";
 
-    private final PsiClass parentClass;
-    private final List<PsiField> includedFields;
-    private final List<PsiField> mandatoryFields;
-    private final String BUILDER_CLASS_NAME;
-    private final String BUILDER_CLASS_NAME_SUFFIX = "Builder";
 
-    BuilderPatternGenerator(PsiClass parentClass, List<PsiField> includedFields, List<PsiField> mandatoryFields) {
+    private PsiClass parentClass;
+    private List<PsiField> includedFields;
+    private List<PsiField> mandatoryFields;
+    private String builderClassName;
+
+    private final String builderAccessMethodTemplate = getTemplate(BUILDER_ACCESS_METHOD_TEMPLATE);
+    private final String buildMethodTemplate = getTemplate(BUILDER_BUILD_METHOD_TEMPLATE);
+    private final String builderWithMethodTemplate = getTemplate(BUILDER_WITH_METHOD_TEMPLATE);
+
+    public BuilderPatternGenerator(@NotNull PsiClass parentClass, List<PsiField> includedFields, List<PsiField> mandatoryFields) {
         this.parentClass = parentClass;
         this.includedFields = includedFields;
         this.mandatoryFields = mandatoryFields;
-        this.BUILDER_CLASS_NAME = Objects.requireNonNull(parentClass.getName()).concat(BUILDER_CLASS_NAME_SUFFIX);
+        this.builderClassName = Objects.requireNonNull(parentClass.getName()).concat(BUILDER_CLASS_NAME_SUFFIX);
     }
 
     void generate() {
@@ -38,33 +51,36 @@ class BuilderPatternGenerator {
     }
 
     private void prepareParentClass() {
-        includedFields.forEach(includedField -> PsiMemberGeneratorUtils.modifyPsiMember(includedField, privateNonStaticMap));
-        generateConstructorForParentClass();
-        generateGettersAndSettersForParentClass();
-        deletePreviousInstanceOfBuilderClass();
+        PsiMethod constructor = generateConstructorForParentClass();
+        List<PsiMethod> gettersAndSetters = generateGettersAndSettersForParentClass();
+        deleteRelated(gettersAndSetters);
+        includedFields.forEach(PsiMemberModifierField.PRIVATE::applyModifier);
+        parentClass.add(constructor);
+        gettersAndSetters.forEach(parentClass::add);
     }
 
-    private void deletePreviousInstanceOfBuilderClass() {
-        Arrays.stream(parentClass.getInnerClasses())
-                .filter(innerClass -> Objects.equals(innerClass.getName(), BUILDER_CLASS_NAME))
-                .forEach(PsiMember::delete);
-    }
-
-    private void generateConstructorForParentClass() {
-        Arrays.stream(parentClass.getConstructors()).forEach(PsiMember::delete);
+    private PsiMethod generateConstructorForParentClass() {
         PsiMethod constructorForParentClass = PsiMemberGeneratorUtils.generateConstructorForClass(parentClass, mandatoryFields);
-        PsiMemberGeneratorUtils.modifyPsiMember(constructorForParentClass, privateNonStaticMap);
-        parentClass.add(constructorForParentClass);
+        PsiMemberModifierField.PRIVATE.applyModifier(constructorForParentClass);
+        return constructorForParentClass;
     }
 
-    private void generateGettersAndSettersForParentClass() {
+    private List<PsiMethod> generateGettersAndSettersForParentClass() {
         List<PsiMethod> gettersAndSetters = PsiMemberGeneratorUtils.generateGettersAndSettersForClass(includedFields, parentClass);
-        gettersAndSetters.forEach(getterOrSetter -> PsiMemberGeneratorUtils.modifyPsiMember(getterOrSetter, publicNonStaticMap));
+        gettersAndSetters.forEach(PsiMemberModifierField.PUBLIC::applyModifier);
+        return gettersAndSetters;
+    }
+
+    private void deleteRelated(List<PsiMethod> gettersAndSetters) {
+        Arrays.stream(parentClass.getInnerClasses())
+                .filter(innerClass -> innerClass.getName() != null && innerClass.getName().equals(builderClassName))
+                .forEach(PsiMember::delete);
+        Arrays.stream(parentClass.getConstructors())
+                .forEach(PsiMember::delete);
         List<String> gettersAndSettersNames = gettersAndSetters.stream().map(PsiMethod::getName).collect(Collectors.toList());
         Arrays.stream(parentClass.getMethods())
                 .filter(parentClassMethod -> gettersAndSettersNames.contains(parentClassMethod.getName()))
                 .forEach(PsiMethod::delete);
-        gettersAndSetters.forEach(parentClass::add);
     }
 
     private PsiClass generateStuffForBuilderClass() {
@@ -79,8 +95,8 @@ class BuilderPatternGenerator {
     }
 
     private PsiClass generateBuilderClass() {
-        PsiClass builderClass = PsiClassGeneratorUtils.generateClassForProjectWithName(parentClass.getProject(), BUILDER_CLASS_NAME);
-        PsiMemberGeneratorUtils.modifyPsiMember(builderClass, publicStaticFinalMap);
+        PsiClass builderClass = PsiClassGeneratorUtils.generateClassForProjectWithName(parentClass.getProject(), builderClassName);
+        PsiMemberModifierField.PUBLIC_STATIC.applyModifier(builderClass);
         return builderClass;
     }
 
@@ -88,59 +104,51 @@ class BuilderPatternGenerator {
         List<PsiField> builderFields = includedFields.stream()
                 .map(includedField -> JavaPsiFacade.getElementFactory(parentClass.getProject()).createField(Objects.requireNonNull(includedField.getName()), includedField.getType()))
                 .collect(Collectors.toList());
-        builderFields.forEach(builderField -> PsiMemberGeneratorUtils.modifyPsiMember(builderField, privateNonStaticMap));
+        builderFields.forEach(PsiMemberModifierField.PRIVATE::applyModifier);
         return builderFields;
     }
 
     private PsiMethod generateBuilderConstructor(PsiClass builderClass) {
         PsiMethod builderConstructor = PsiMemberGeneratorUtils.generateConstructorForClass(builderClass, mandatoryFields);
-        PsiMemberGeneratorUtils.modifyPsiMember(builderConstructor, privateNonStaticMap);
+        PsiMemberModifierField.PRIVATE.applyModifier(builderConstructor);
         return builderConstructor;
     }
 
     private PsiMethod generateBuilderAccessMethod() {
-        StringBuilder builderAccessMethodSb = new StringBuilder();
-        builderAccessMethodSb.append("public static ").append(parentClass.getName()).append("Builder a").append(parentClass.getName()).append("(");
-        String argumentsWithTypesString = mandatoryFields.stream()
-                .map(argument -> argument.getType().getCanonicalText() + " " + argument.getName()).collect(Collectors.joining(", "));
-        builderAccessMethodSb.append(argumentsWithTypesString);
-        builderAccessMethodSb.append("){");
-        builderAccessMethodSb.append("return new ").append(BUILDER_CLASS_NAME).append("(");
-        String argumentsWithoutTypesString = mandatoryFields.stream()
-                .map(PsiField::getName).collect(Collectors.joining(", "));
-        builderAccessMethodSb.append(argumentsWithoutTypesString).append(");}");
-        return JavaPsiFacade.getElementFactory(parentClass.getProject()).createMethodFromText(builderAccessMethodSb.toString(), parentClass);
+        String argumentsWithTypes = PsiMemberGeneratorUtils.generateArgumentsWithTypesFromFields(mandatoryFields);
+        String argumentsWithoutTypes = PsiMemberGeneratorUtils.generateArgumentsWithoutTypesFromFields(mandatoryFields);
+        String builderAccessMethodContent = String.format(builderAccessMethodTemplate, builderClassName, parentClass.getName(), argumentsWithTypes, builderClassName, argumentsWithoutTypes);
+        PsiMethod builderAccessMethod = JavaPsiFacade.getElementFactory(parentClass.getProject()).createMethodFromText(builderAccessMethodContent, parentClass);
+        PsiMemberModifierField.PUBLIC_STATIC.applyModifier(builderAccessMethod);
+        return builderAccessMethod;
     }
 
     private PsiMethod generateBuildMethod(PsiClass builderClass, List<PsiField> includedFieldsWithoutMandatoryFields) {
-        StringBuilder buildMethodSb = new StringBuilder();
-        buildMethodSb.append("public ").append(parentClass.getName()).append(" build() {");
-        buildMethodSb.append(parentClass.getName()).append(" ").append(toLowerCaseFirstLetterString(Objects.requireNonNull(parentClass.getName()))).append(" = ");
-        buildMethodSb.append("new ").append(parentClass.getName()).append("(");
-        String argumentsWithoutTypesString = mandatoryFields.stream()
-                .map(PsiField::getName).collect(Collectors.joining(", "));
-        buildMethodSb.append(argumentsWithoutTypesString).append(");");
-        for (PsiField psiField : includedFieldsWithoutMandatoryFields) {
-            buildMethodSb.append(toLowerCaseFirstLetterString(parentClass.getName())).append(".set").append(toUpperCaseFirstLetterString(Objects.requireNonNull(psiField.getName()))).append("(").append(toLowerCaseFirstLetterString(Objects.requireNonNull(psiField.getName()))).append(");");
-        }
-        buildMethodSb.append("return ").append(toLowerCaseFirstLetterString(parentClass.getName())).append(";}");
-        return JavaPsiFacade.getElementFactory(parentClass.getProject()).createMethodFromText(buildMethodSb.toString(), builderClass);
-
+        String parentClassName = Objects.requireNonNull(parentClass.getName());
+        String lowercaseParentClassName = toLowerCaseFirstLetterString(parentClassName);
+        String argumentsWithoutTypes = PsiMemberGeneratorUtils.generateArgumentsWithoutTypesFromFields(mandatoryFields);
+        String setters = includedFieldsWithoutMandatoryFields.stream()
+                .map(psiField -> String.format(BUILDER_BUILD_METHOD_SET_TEMPLATE, lowercaseParentClassName,
+                        toUpperCaseFirstLetterString(Objects.requireNonNull(psiField.getName())),
+                        toLowerCaseFirstLetterString(Objects.requireNonNull(psiField.getName()))))
+                .collect(Collectors.joining("\n"));
+        String buildMethodContent = String.format(buildMethodTemplate,
+                parentClassName, parentClassName, lowercaseParentClassName, parentClassName, argumentsWithoutTypes, setters, lowercaseParentClassName);
+        PsiMethod builderMethod = JavaPsiFacade.getElementFactory(parentClass.getProject()).createMethodFromText(buildMethodContent, builderClass);
+        PsiMemberModifierField.PUBLIC.applyModifier(builderMethod);
+        return builderMethod;
     }
 
     private List<PsiMethod> generateBuilderWithMethods(PsiClass builderClass, List<PsiField> withFields) {
-        List<PsiMethod> withMethods = new ArrayList<>();
-        for (PsiField psiField : withFields) {
-            StringBuilder withMethodSb = new StringBuilder();
-            withMethodSb.append("public ").append(BUILDER_CLASS_NAME).append(" ").append("with").append((toUpperCaseFirstLetterString(Objects.requireNonNull(psiField.getName()))));
-            withMethodSb.append("(").append(psiField.getType().getCanonicalText()).append(" ").append(psiField.getName()).append(") {");
-            withMethodSb.append("this.").append(psiField.getName()).append(" = ").append(psiField.getName()).append(";");
-            withMethodSb.append("return this;");
-            withMethodSb.append("}");
-            PsiMethod psiMethod = JavaPsiFacade.getElementFactory(parentClass.getProject()).createMethodFromText(withMethodSb.toString(), builderClass);
-            withMethods.add(psiMethod);
-        }
-        return withMethods;
+        return withFields.stream()
+                .map(psiField -> {
+                    String upperName = toUpperCaseFirstLetterString(Objects.requireNonNull(psiField.getName()));
+                    String name = psiField.getName();
+                    String type = psiField.getType().getCanonicalText();
+                    String content = String.format(builderWithMethodTemplate, builderClassName, upperName, type, name, name, name);
+                    return JavaPsiFacade.getElementFactory(parentClass.getProject()).createMethodFromText(content, builderClass);
+                })
+                .collect(Collectors.toList());
     }
 
 }

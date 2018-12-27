@@ -19,11 +19,11 @@ public abstract class DesignPatternAction extends AnAction {
         anActionEvent.getPresentation().setEnabled(psiClass != null);
     }
 
-    protected PsiClass getPsiClassFromContext(AnActionEvent e) {
-        PsiFile psiFile = e.getData(LangDataKeys.PSI_FILE);
-        Editor editor = e.getData(PlatformDataKeys.EDITOR);
+    protected PsiClass getPsiClassFromContext(AnActionEvent anActionEvent) {
+        PsiFile psiFile = anActionEvent.getData(LangDataKeys.PSI_FILE);
+        Editor editor = anActionEvent.getData(PlatformDataKeys.EDITOR);
         if (psiFile == null || editor == null) {
-            e.getPresentation().setEnabled(false);
+            anActionEvent.getPresentation().setEnabled(false);
             return null;
         }
         int offset = editor.getCaretModel().getOffset();

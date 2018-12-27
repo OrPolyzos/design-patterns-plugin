@@ -1,0 +1,4 @@
+%s with%s(%s %s) {
+    this.%s = %s;
+    return this;
+}
