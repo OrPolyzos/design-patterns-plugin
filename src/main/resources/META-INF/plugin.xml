@@ -1,5 +1,5 @@
 <idea-plugin>
-    <id>ore.plugins.idea.design-patterns</id>
+    <id>design.patterns.plugin</id>
     <name>Design Patterns</name>
     <vendor email="orestes.polyzos@gmail.com" url="https://www.linkedin.com/in/orestes-polyzos/">Orestes Polyzos</vendor>
 
@@ -27,6 +27,14 @@
             </ul>
         ]]>
     </description>
+
+    <idea-version since-build="162"/>
+
+    <change-notes>
+        <![CDATA[
+            <strong>Fixes error with duplicate action exception</strong>
+        ]]>
+    </change-notes>
 
     <actions>
         <group id="design-patterns-group" text="Design Patterns" popup="true">
