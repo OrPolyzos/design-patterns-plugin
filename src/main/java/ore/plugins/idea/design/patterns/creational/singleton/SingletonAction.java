@@ -13,14 +13,10 @@ public class SingletonAction extends DesignPatternAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-        PsiClass psiClass = getPsiClassFromContext(anActionEvent);
-        generateCode(psiClass);
-    }
-
-    @Override
-    public void update(@NotNull AnActionEvent anActionEvent) {
-        PsiClass psiClass = getPsiClassFromContext(anActionEvent);
-        anActionEvent.getPresentation().setEnabled(psiClass != null);
+        safeExecute(() -> {
+            PsiClass psiClass = extractPsiClass(anActionEvent);
+            generateCode(psiClass);
+        }, anActionEvent, LOGGER);
     }
 
     private void generateCode(PsiClass psiClass) {

@@ -7,6 +7,7 @@ import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiModifier;
 import ore.plugins.idea.design.patterns.base.DesignPatternAction;
 import ore.plugins.idea.design.patterns.base.dialog.SelectStuffDialog;
+import ore.plugins.idea.design.patterns.exception.InvalidFileException;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -21,23 +22,31 @@ public class BuilderAction extends DesignPatternAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-        PsiClass psiClass = getPsiClassFromContext(anActionEvent);
-        SelectStuffDialog<PsiField> includedFieldsDialog = new SelectStuffDialog<>(psiClass, Arrays.asList(psiClass.getFields()), psiField -> true, BUILDER_DIALOG_TITLE, BUILDER_FIELDS_DIALOG_TEXT, ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        if (includedFieldsDialog.isOK()) {
-            SelectStuffDialog<PsiField> mandatoryFieldsDialog = new SelectStuffDialog<>(psiClass, includedFieldsDialog.getSelectedStuff(), psiField -> true, BUILDER_DIALOG_TITLE, BUILDER_MANDATORY_FIELDS_DIALOG_TEXT, ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-            if (mandatoryFieldsDialog.isOK()) {
-                generateCode(psiClass, includedFieldsDialog.getSelectedStuff(), mandatoryFieldsDialog.getSelectedStuff());
+        safeExecute(() -> {
+            PsiClass psiClass = extractPsiClass(anActionEvent);
+            SelectStuffDialog<PsiField> includedFieldsDialog = new SelectStuffDialog<>(psiClass, Arrays.asList(psiClass.getFields()), this::makeSureIsNotStatic, BUILDER_DIALOG_TITLE, BUILDER_FIELDS_DIALOG_TEXT, ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+            if (includedFieldsDialog.isOK()) {
+                SelectStuffDialog<PsiField> mandatoryFieldsDialog = new SelectStuffDialog<>(psiClass, includedFieldsDialog.getSelectedStuff(), this::makeSureIsNotStatic, BUILDER_DIALOG_TITLE, BUILDER_MANDATORY_FIELDS_DIALOG_TEXT, ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                if (mandatoryFieldsDialog.isOK()) {
+                    generateCode(psiClass, includedFieldsDialog.getSelectedStuff(), mandatoryFieldsDialog.getSelectedStuff());
+                }
             }
-        }
+        }, anActionEvent, LOGGER);
+    }
+
+    private boolean makeSureIsNotStatic(PsiField psiField) {
+        return psiField.getModifierList() == null || (!psiField.getModifierList().hasModifierProperty(PsiModifier.STATIC) && !psiField.getModifierList().hasModifierProperty(PsiModifier.FINAL));
     }
 
     @Override
     public void update(@NotNull AnActionEvent anActionEvent) {
-        super.update(anActionEvent);
-        PsiClass psiClass = getPsiClassFromContext(anActionEvent);
-        if (psiClass.getModifierList() != null && psiClass.getModifierList().hasModifierProperty(PsiModifier.STATIC)){
-            anActionEvent.getPresentation().setEnabled(false);
-        }
+        safeExecute(() -> {
+            super.update(anActionEvent);
+            PsiClass psiClass = extractPsiClass(anActionEvent);
+            if (psiClass.getModifierList() != null && psiClass.getModifierList().hasModifierProperty(PsiModifier.STATIC)) {
+                throw new InvalidFileException();
+            }
+        }, anActionEvent, LOGGER);
     }
 
     private void generateCode(PsiClass psiClass, List<PsiField> includedFields, List<PsiField> mandatoryFields) {

@@ -148,6 +148,7 @@ class BuilderPatternGenerator implements TemplateReader {
                     String content = String.format(builderWithMethodTemplate, builderClassName, upperName, type, name, name, name);
                     return JavaPsiFacade.getElementFactory(parentClass.getProject()).createMethodFromText(content, builderClass);
                 })
+                .peek(PsiMemberModifierField.PUBLIC::applyModifier)
                 .collect(Collectors.toList());
     }
 

@@ -33,33 +33,35 @@ public class FactoryAction extends DesignPatternAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-        PsiClass psiClass = getPsiClassFromContext(anActionEvent);
-        List<PsiClass> interfacesAndExtendsList = PsiClassGeneratorUtils.getInterfacesAndExtends(psiClass);
-        if (ValidationUtils.validateClassesListIfNonEmpty(psiClass, interfacesAndExtendsList, EMPTY_INTERFACES_LIST_ERROR_MESSAGE)) {
-            SelectStuffDialog<PsiClass> factoryInterfaceChoiceDialog = new SelectStuffDialog<>(psiClass, interfacesAndExtendsList, candidateInterface -> true, FACTORY_DIALOG_TITLE, FACTORY_INTERFACE_CHOICE_DIALOG_TEXT, ListSelectionModel.SINGLE_SELECTION);
-            if (factoryInterfaceChoiceDialog.isOK()) {
-                List<PsiClass> selectedInterfaces = factoryInterfaceChoiceDialog.getSelectedStuff();
-                if (ValidationUtils.validateClassesListForExactSize(psiClass, selectedInterfaces, 1, EXACT_SIZE_INTERFACES_LIST_ERROR_MESSAGE)) {
-                    PsiClass selectedInterface = selectedInterfaces.get(0);
-                    InputValueDialog factoryNameDialog = new InputValueDialog(psiClass, FACTORY_DIALOG_TITLE, FACTORY_NAME_DIALOG_TEXT);
-                    if (factoryNameDialog.isOK()) {
-                        String factoryName = factoryNameDialog.getInput();
-                        factoryName = factoryName.replace(FACTORY_SUFFIX, "");
-                        factoryName = factoryName.replace(ENUM_SUFFIX, "");
-                        if (factoryName.isEmpty()) {
-                            new MessageBoxDialog(psiClass, EMPTY_NAME_ERROR_MESSAGE);
-                        } else if (ValidationUtils.validateClassNameForDuplicate(psiClass, factoryName + FACTORY_SUFFIX + JAVA_FILE_EXTENSION, DUPLICATE_NAME_ERROR_MESSAGE + factoryName + FACTORY_SUFFIX + JAVA_FILE_EXTENSION)
-                                && ValidationUtils.validateClassNameForDuplicate(psiClass, factoryName + ENUM_SUFFIX + JAVA_FILE_EXTENSION, DUPLICATE_NAME_ERROR_MESSAGE + factoryName + ENUM_SUFFIX + JAVA_FILE_EXTENSION)) {
-                            List<PsiClass> candidateImplementors = new ArrayList<>(ClassInheritorsSearch.search(selectedInterface).findAll());
-                            SelectStuffDialog<PsiClass> factoryImplementorsChoiceDialog = new SelectStuffDialog<>(psiClass, candidateImplementors, candidateImplementor -> true, FACTORY_DIALOG_TITLE, FACTORY_IMPLEMENTORS_CHOICE_DIALOG_TEXT, ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-                            if (factoryImplementorsChoiceDialog.isOK() && ValidationUtils.validateClassesListIfNonEmpty(psiClass, factoryImplementorsChoiceDialog.getSelectedStuff(), EMPTY_IMPLEMENTORS_LIST_ERROR_MESSAGE)) {
-                                generateCode(psiClass, selectedInterface, factoryName, factoryImplementorsChoiceDialog.getSelectedStuff());
+        safeExecute(() -> {
+            PsiClass psiClass = extractPsiClass(anActionEvent);
+            List<PsiClass> interfacesAndExtendsList = PsiClassGeneratorUtils.getInterfacesAndExtends(psiClass);
+            if (ValidationUtils.validateClassesListIfNonEmpty(psiClass, interfacesAndExtendsList, EMPTY_INTERFACES_LIST_ERROR_MESSAGE)) {
+                SelectStuffDialog<PsiClass> factoryInterfaceChoiceDialog = new SelectStuffDialog<>(psiClass, interfacesAndExtendsList, candidateInterface -> true, FACTORY_DIALOG_TITLE, FACTORY_INTERFACE_CHOICE_DIALOG_TEXT, ListSelectionModel.SINGLE_SELECTION);
+                if (factoryInterfaceChoiceDialog.isOK()) {
+                    List<PsiClass> selectedInterfaces = factoryInterfaceChoiceDialog.getSelectedStuff();
+                    if (ValidationUtils.validateClassesListForExactSize(psiClass, selectedInterfaces, 1, EXACT_SIZE_INTERFACES_LIST_ERROR_MESSAGE)) {
+                        PsiClass selectedInterface = selectedInterfaces.get(0);
+                        InputValueDialog factoryNameDialog = new InputValueDialog(psiClass, FACTORY_DIALOG_TITLE, FACTORY_NAME_DIALOG_TEXT);
+                        if (factoryNameDialog.isOK()) {
+                            String factoryName = factoryNameDialog.getInput();
+                            factoryName = factoryName.replace(FACTORY_SUFFIX, "");
+                            factoryName = factoryName.replace(ENUM_SUFFIX, "");
+                            if (factoryName.isEmpty()) {
+                                new MessageBoxDialog(psiClass, EMPTY_NAME_ERROR_MESSAGE);
+                            } else if (ValidationUtils.validateClassNameForDuplicate(psiClass, factoryName + FACTORY_SUFFIX + JAVA_FILE_EXTENSION, DUPLICATE_NAME_ERROR_MESSAGE + factoryName + FACTORY_SUFFIX + JAVA_FILE_EXTENSION)
+                                    && ValidationUtils.validateClassNameForDuplicate(psiClass, factoryName + ENUM_SUFFIX + JAVA_FILE_EXTENSION, DUPLICATE_NAME_ERROR_MESSAGE + factoryName + ENUM_SUFFIX + JAVA_FILE_EXTENSION)) {
+                                List<PsiClass> candidateImplementors = new ArrayList<>(ClassInheritorsSearch.search(selectedInterface).findAll());
+                                SelectStuffDialog<PsiClass> factoryImplementorsChoiceDialog = new SelectStuffDialog<>(psiClass, candidateImplementors, candidateImplementor -> true, FACTORY_DIALOG_TITLE, FACTORY_IMPLEMENTORS_CHOICE_DIALOG_TEXT, ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                                if (factoryImplementorsChoiceDialog.isOK() && ValidationUtils.validateClassesListIfNonEmpty(psiClass, factoryImplementorsChoiceDialog.getSelectedStuff(), EMPTY_IMPLEMENTORS_LIST_ERROR_MESSAGE)) {
+                                    generateCode(psiClass, selectedInterface, factoryName, factoryImplementorsChoiceDialog.getSelectedStuff());
+                                }
                             }
                         }
                     }
                 }
             }
-        }
+        }, anActionEvent, LOGGER);
     }
 
     private void generateCode(PsiClass psiClass, PsiClass selectedInterface, String factoryName, List<PsiClass> selectedImplementors) {

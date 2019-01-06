@@ -25,19 +25,21 @@ public class StrategyAction extends DesignPatternAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-        PsiClass psiClass = getPsiClassFromContext(anActionEvent);
-        InputValueDialog strategyNameDialog = new InputValueDialog(psiClass, STRATEGY_DIALOG_TITLE, STRATEGY_NAME_DIALOG_TEXT);
-        if (strategyNameDialog.isOK()) {
-            String strategyName = strategyNameDialog.getInput();
-            if (strategyName.isEmpty()) {
-                new MessageBoxDialog(psiClass, EMPTY_NAME_ERROR_MESSAGE);
-            } else if (ValidationUtils.validateClassNameForDuplicate(psiClass, strategyName, DUPLICATE_NAME_ERROR_MESSAGE + strategyName + ".")) {
-                SelectStuffDialog<PsiMethod> strategyMethodsDialog = new SelectStuffDialog<>(psiClass, Arrays.asList(psiClass.getMethods()), psiMethod -> !psiMethod.isConstructor(), STRATEGY_DIALOG_TITLE, STRATEGY_METHODS_DIALOG_TEXT, ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-                if (strategyMethodsDialog.isOK()) {
-                    generateCode(psiClass, strategyName, strategyMethodsDialog.getSelectedStuff());
+        safeExecute(() -> {
+            PsiClass psiClass = extractPsiClass(anActionEvent);
+            InputValueDialog strategyNameDialog = new InputValueDialog(psiClass, STRATEGY_DIALOG_TITLE, STRATEGY_NAME_DIALOG_TEXT);
+            if (strategyNameDialog.isOK()) {
+                String strategyName = strategyNameDialog.getInput();
+                if (strategyName.isEmpty()) {
+                    new MessageBoxDialog(psiClass, EMPTY_NAME_ERROR_MESSAGE);
+                } else if (ValidationUtils.validateClassNameForDuplicate(psiClass, strategyName, DUPLICATE_NAME_ERROR_MESSAGE + strategyName + ".")) {
+                    SelectStuffDialog<PsiMethod> strategyMethodsDialog = new SelectStuffDialog<>(psiClass, Arrays.asList(psiClass.getMethods()), psiMethod -> !psiMethod.isConstructor(), STRATEGY_DIALOG_TITLE, STRATEGY_METHODS_DIALOG_TEXT, ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                    if (strategyMethodsDialog.isOK()) {
+                        generateCode(psiClass, strategyName, strategyMethodsDialog.getSelectedStuff());
+                    }
                 }
             }
-        }
+        }, anActionEvent, LOGGER);
 
     }
 
