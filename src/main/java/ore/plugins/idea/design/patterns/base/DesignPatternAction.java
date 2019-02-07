@@ -11,15 +11,23 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import ore.plugins.idea.design.patterns.exception.ExceptionResolver;
 import ore.plugins.idea.design.patterns.exception.InvalidFileException;
+import ore.plugins.idea.design.patterns.util.MessageRenderer;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 
-public abstract class DesignPatternAction extends AnAction implements ExceptionResolver {
+public abstract class DesignPatternAction extends AnAction implements MessageRenderer, ExceptionResolver {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(DesignPatternAction.class);
+
+    @Override
+    public void actionPerformed(AnActionEvent anActionEvent) {
+        safeExecute(() -> safeActionPerformed(anActionEvent), anActionEvent, LOGGER);
+    }
+
+    public abstract void safeActionPerformed(AnActionEvent anActionEvent);
 
     @Override
     public void update(@NotNull AnActionEvent anActionEvent) {

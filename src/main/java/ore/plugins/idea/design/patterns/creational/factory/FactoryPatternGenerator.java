@@ -27,12 +27,12 @@ class FactoryPatternGenerator {
     private String factoryClassName;
     private String enumClassName;
 
-    FactoryPatternGenerator(PsiClass psiClass, PsiClass selectedInterface, String factoryName, List<PsiClass> selectedImplementors) {
+    FactoryPatternGenerator(PsiClass psiClass, PsiClass selectedInterface, String factoryName, String enumName, List<PsiClass> selectedImplementors) {
         this.psiClass = psiClass;
         this.selectedInterface = selectedInterface;
         this.selectedImplementors = selectedImplementors;
-        this.factoryClassName = factoryName + "Factory";
-        this.enumClassName = factoryName + "Enum";
+        this.factoryClassName = factoryName;
+        this.enumClassName = enumName;
         this.psiPackageStatement = ((PsiJavaFile) psiClass.getContainingFile()).getPackageStatement();
     }
 

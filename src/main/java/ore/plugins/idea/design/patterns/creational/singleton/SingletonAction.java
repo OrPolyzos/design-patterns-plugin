@@ -4,7 +4,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.psi.PsiClass;
 import ore.plugins.idea.design.patterns.base.DesignPatternAction;
-import org.jetbrains.annotations.NotNull;
 
 
 public class SingletonAction extends DesignPatternAction {
@@ -12,11 +11,9 @@ public class SingletonAction extends DesignPatternAction {
     private SingletonPatternGenerator singletonPatternGenerator = new SingletonPatternGenerator();
 
     @Override
-    public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-        safeExecute(() -> {
-            PsiClass psiClass = extractPsiClass(anActionEvent);
-            generateCode(psiClass);
-        }, anActionEvent, LOGGER);
+    public void safeActionPerformed(AnActionEvent anActionEvent) {
+        PsiClass psiClass = extractPsiClass(anActionEvent);
+        generateCode(psiClass);
     }
 
     private void generateCode(PsiClass psiClass) {

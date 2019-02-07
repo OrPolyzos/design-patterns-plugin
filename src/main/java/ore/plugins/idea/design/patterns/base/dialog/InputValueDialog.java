@@ -1,14 +1,14 @@
 package ore.plugins.idea.design.patterns.base.dialog;
 
-import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.psi.PsiClass;
 import com.intellij.ui.components.JBTextField;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
-public class InputValueDialog extends DialogWrapper {
+public class InputValueDialog extends DesignPatternDialog {
 
     private final LabeledComponent<JPanel> component;
     private JBTextField jbTextField;
@@ -22,8 +22,7 @@ public class InputValueDialog extends DialogWrapper {
         jbTextField.setColumns(30);
         jPanel.add(jbTextField);
         component = LabeledComponent.create(jPanel, componentText);
-        init();
-        show();
+        showDialog();
     }
 
     @Nullable
