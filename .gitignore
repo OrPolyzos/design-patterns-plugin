@@ -1,7 +1,7 @@
 target
 out
 
-gradle.properties
+/gradle.properties
 .gradle
 /build/
 gradle-app.setting
