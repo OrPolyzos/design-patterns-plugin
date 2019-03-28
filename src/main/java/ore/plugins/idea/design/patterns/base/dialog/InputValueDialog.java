@@ -25,6 +25,18 @@ public class InputValueDialog extends DesignPatternDialog {
         showDialog();
     }
 
+    public InputValueDialog(PsiClass psiClass) {
+        super(psiClass.getProject());
+        setTitle("");
+        JPanel jPanel = new JPanel();
+        jbTextField = new JBTextField();
+        jbTextField.setEditable(true);
+        jbTextField.setColumns(30);
+        jPanel.add(jbTextField);
+        component = LabeledComponent.create(jPanel, "");
+        showDialog();
+    }
+
     @Nullable
     @Override
     protected JComponent createCenterPanel() {
