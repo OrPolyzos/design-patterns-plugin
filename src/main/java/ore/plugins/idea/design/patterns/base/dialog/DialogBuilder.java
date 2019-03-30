@@ -29,7 +29,7 @@ public class DialogBuilder extends DesignPatternDialog {
 
     public DialogBuilder withClassesDialog() {
         final CreateClassesDialog dialog = CreateClassesDialog.CreateClassesDialogBuilder
-                .aCreateClassesDialog(psiClass).build();
+                .aCreateClassesDialog(psiClass).buildWithButton();
         jComponent.add(dialog.getContentPanel());
         return this;
     }
