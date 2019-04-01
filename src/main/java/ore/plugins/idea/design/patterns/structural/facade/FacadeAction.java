@@ -3,9 +3,7 @@ package ore.plugins.idea.design.patterns.structural.facade;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.psi.PsiClass;
 import ore.plugins.idea.design.patterns.base.DesignPatternAction;
-import ore.plugins.idea.design.patterns.base.dialog.CreateClassesDialog;
 import ore.plugins.idea.design.patterns.base.dialog.FacadeDialog;
-import ore.plugins.idea.design.patterns.base.dialog.InputValueDialog;
 import ore.plugins.idea.design.patterns.util.ClassNameValidator;
 
 public class FacadeAction extends DesignPatternAction implements ClassNameValidator {

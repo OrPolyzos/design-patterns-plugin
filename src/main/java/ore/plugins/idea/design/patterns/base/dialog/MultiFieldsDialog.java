@@ -2,16 +2,16 @@ package ore.plugins.idea.design.patterns.base.dialog;
 
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.psi.PsiClass;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBTextField;
-import org.jdesktop.swingx.VerticalLayout;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Component for dynamically add fields in one Line
@@ -19,11 +19,11 @@ import java.util.LinkedList;
  *
  * @author kostya05983
  */
-public class CreateClassesDialog extends DesignPatternDialog {
+public class MultiFieldsDialog extends DesignPatternDialog {
     private JComponent jComponent;
     private String title;
 
-    protected CreateClassesDialog(@Nullable PsiClass psiClass) {
+    protected MultiFieldsDialog(@Nullable PsiClass psiClass) {
         super(psiClass.getProject());
         setTitle(title);
     }
@@ -43,23 +43,23 @@ public class CreateClassesDialog extends DesignPatternDialog {
     }
 
 
-    public static class CreateClassesDialogBuilder {
+    public static class MultiFieldsDialogBuilder {
         private PsiClass psiClass;
         private String title = "Enter classes of interface";
         private JComponent jComponent;
-        private LinkedList<String> labelsList;
+        private HashMap<String, LinkedList<JBTextField>> fields;
 
-        private CreateClassesDialogBuilder(PsiClass psiClass) {
+        private MultiFieldsDialogBuilder(PsiClass psiClass) {
             this.psiClass = psiClass;
-            labelsList = new LinkedList<>();
+            fields = new HashMap<>();
         }
 
-        public static CreateClassesDialogBuilder aCreateClassesDialog(PsiClass psiClass) {
-            return new CreateClassesDialogBuilder(psiClass);
+        public static MultiFieldsDialogBuilder aCreateClassesDialog(PsiClass psiClass) {
+            return new MultiFieldsDialogBuilder(psiClass);
         }
 
 
-        public CreateClassesDialogBuilder withTitle(String title) {
+        public MultiFieldsDialogBuilder withTitle(String title) {
             this.title = title;
             return this;
         }
@@ -70,8 +70,8 @@ public class CreateClassesDialog extends DesignPatternDialog {
          * @param title - label's name
          * @return - builder
          */
-        public CreateClassesDialogBuilder withTextBox(String title) {
-            labelsList.add(title);
+        public MultiFieldsDialogBuilder withTextBox(String title) {
+            fields.put(title, new LinkedList<>());
             return this;
         }
 
@@ -80,15 +80,28 @@ public class CreateClassesDialog extends DesignPatternDialog {
             JPanel linePanel2 = new JPanel();
             linePanel2.setLayout(new BoxLayout(linePanel2, BoxLayout.X_AXIS));
 
-            for (String label : labelsList) {
-                linePanel2.add(LabeledComponent.create(createTextField(), label, BorderLayout.CENTER));
+            for (Map.Entry<String, LinkedList<JBTextField>> entry : fields.entrySet()) {
+                JBTextField field = new JBTextField();
+                entry.getValue().add(field);
+                linePanel2.add(LabeledComponent.create(field, entry.getKey(), BorderLayout.CENTER));
             }
             jComponent.add(linePanel2);
         }
 
-        private JBTextField createTextField() {
-            return new JBTextField();
+        private void addFieldLine() {
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+
+            for (Map.Entry<String, LinkedList<JBTextField>> fields : fields.entrySet()) {
+                JBTextField field = new JBTextField();
+                fields.getValue().add(field);
+                panel.add(field);
+            }
+
+            jComponent.add(panel, jComponent.getComponentCount() - 1);
+            jComponent.revalidate();
         }
+
 
         private void initMainUI() {
             jComponent = new JPanel();
@@ -105,31 +118,20 @@ public class CreateClassesDialog extends DesignPatternDialog {
         }
 
 
-        private void addFieldLine() {
-            JPanel panel = new JPanel();
-            panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-
-            for (int i = 0; i < labelsList.size(); i++) {
-                panel.add(new JBTextField());
-            }
-            jComponent.add(panel, jComponent.getComponentCount() - 1);
-            jComponent.revalidate();
-        }
-
-        public CreateClassesDialog build() {
-            CreateClassesDialog createClassesDialog = new CreateClassesDialog(psiClass);
-            createClassesDialog.setTitle(title);
+        public MultiFieldsDialog build() {
+            MultiFieldsDialog multiFieldsDialog = new MultiFieldsDialog(psiClass);
+            multiFieldsDialog.setTitle(title);
             initMainUI();
-            createClassesDialog.setJComponent(jComponent);
-            return createClassesDialog;
+            multiFieldsDialog.setJComponent(jComponent);
+            return multiFieldsDialog;
         }
 
-        public CreateClassesDialog buildWithButton() {
-            CreateClassesDialog createClassesDialog = new CreateClassesDialog(psiClass);
-            createClassesDialog.setTitle(title);
+        public MultiFieldsDialog buildWithButton() {
+            MultiFieldsDialog multiFieldsDialog = new MultiFieldsDialog(psiClass);
+            multiFieldsDialog.setTitle(title);
             initUI();
-            createClassesDialog.setJComponent(jComponent);
-            return createClassesDialog;
+            multiFieldsDialog.setJComponent(jComponent);
+            return multiFieldsDialog;
         }
 
         /**

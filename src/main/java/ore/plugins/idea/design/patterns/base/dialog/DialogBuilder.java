@@ -28,7 +28,7 @@ public class DialogBuilder extends DesignPatternDialog {
     }
 
     public DialogBuilder withClassesDialog() {
-        final CreateClassesDialog dialog = CreateClassesDialog.CreateClassesDialogBuilder
+        final MultiFieldsDialog dialog = MultiFieldsDialog.MultiFieldsDialogBuilder
                 .aCreateClassesDialog(psiClass).buildWithButton();
         jComponent.add(dialog.getContentPanel());
         return this;

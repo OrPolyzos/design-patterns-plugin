@@ -25,10 +25,10 @@ public class FacadeDialog extends DesignPatternDialog {
         jComponent.add(enterNameInterface());
         jComponent.add(enterMainClass());
         jComponent.add(addArguments());
-        CreateClassesDialog.CreateClassesDialogBuilder dialogBuilder = CreateClassesDialog.CreateClassesDialogBuilder.aCreateClassesDialog(psiClass);
+        MultiFieldsDialog.MultiFieldsDialogBuilder dialogBuilder = MultiFieldsDialog.MultiFieldsDialogBuilder.aCreateClassesDialog(psiClass);
         dialogBuilder.withTitle("Testststs");
         dialogBuilder.withTextBox("ClassName").withTextBox("TypeName");
-        CreateClassesDialog dialog = dialogBuilder.buildWithButton();
+        MultiFieldsDialog dialog = dialogBuilder.buildWithButton();
         jComponent.add(dialog.createCenterPanel());
         return jComponent;
     }
@@ -39,18 +39,18 @@ public class FacadeDialog extends DesignPatternDialog {
     }
 
     private JComponent enterMainClass() {
-        CreateClassesDialog.CreateClassesDialogBuilder dialogBuilder = CreateClassesDialog.CreateClassesDialogBuilder.aCreateClassesDialog(psiClass);
+        MultiFieldsDialog.MultiFieldsDialogBuilder dialogBuilder = MultiFieldsDialog.MultiFieldsDialogBuilder.aCreateClassesDialog(psiClass);
         dialogBuilder.withTextBox("name");
         dialogBuilder.withTextBox("return type");
-        CreateClassesDialog dialog = dialogBuilder.build();
+        MultiFieldsDialog dialog = dialogBuilder.build();
         return dialog.createCenterPanel();
     }
 
     private JComponent addArguments() {
-        CreateClassesDialog.CreateClassesDialogBuilder dialogBuilder = CreateClassesDialog.CreateClassesDialogBuilder.aCreateClassesDialog(psiClass);
+        MultiFieldsDialog.MultiFieldsDialogBuilder dialogBuilder = MultiFieldsDialog.MultiFieldsDialogBuilder.aCreateClassesDialog(psiClass);
         dialogBuilder.withTextBox("name");
         dialogBuilder.withTextBox("type");
-        CreateClassesDialog dialog = dialogBuilder.buildWithButton();
+        MultiFieldsDialog dialog = dialogBuilder.buildWithButton();
         return dialog.createCenterPanel();
     }
 }
