@@ -11,6 +11,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -53,11 +54,11 @@ public class MultiFieldsDialog extends DesignPatternDialog {
         private PsiClass psiClass;
         private String title = "Enter classes of interface";
         private JComponent jComponent;
-        private HashMap<String, LinkedList<JBTextField>> fields;
+        private LinkedHashMap<String, LinkedList<JBTextField>> fields;
 
         private MultiFieldsDialogBuilder(PsiClass psiClass) {
             this.psiClass = psiClass;
-            fields = new HashMap<>();
+            fields = new LinkedHashMap<>();
         }
 
         public static MultiFieldsDialogBuilder aCreateClassesDialog(PsiClass psiClass) {
