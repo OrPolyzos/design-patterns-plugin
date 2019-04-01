@@ -1,4 +1,4 @@
-package ore.plugins.idea.design.patterns.base.dialog;
+package ore.plugins.idea.design.patterns.base.dialog.view;
 
 import com.intellij.psi.PsiClass;
 import com.intellij.ui.components.JBTextField;

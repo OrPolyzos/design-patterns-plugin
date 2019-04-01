@@ -1,4 +1,4 @@
-package ore.plugins.idea.design.patterns.base.dialog;
+package ore.plugins.idea.design.patterns.base.dialog.view;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;

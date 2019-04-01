@@ -1,8 +1,9 @@
-package ore.plugins.idea.design.patterns.base.dialog;
+package ore.plugins.idea.design.patterns.base.dialog.view;
 
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.psi.PsiClass;
 import com.intellij.ui.components.JBTextField;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -15,17 +16,18 @@ import java.util.Map;
 
 /**
  * Component for dynamically add fields in one Line
- * todo in development
  *
  * @author kostya05983
  */
 public class MultiFieldsDialog extends DesignPatternDialog {
     private JComponent jComponent;
     private String title;
+    private HashMap<String, LinkedList<JBTextField>> fields;
 
-    protected MultiFieldsDialog(@Nullable PsiClass psiClass) {
+    protected MultiFieldsDialog(@Nullable PsiClass psiClass, @NotNull HashMap<String, LinkedList<JBTextField>> fields) {
         super(psiClass.getProject());
         setTitle(title);
+        this.fields = fields;
     }
 
     public void setJComponent(JComponent jComponent) {
@@ -34,6 +36,10 @@ public class MultiFieldsDialog extends DesignPatternDialog {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public HashMap<String, LinkedList<JBTextField>> getFields() {
+        return fields;
     }
 
     @Nullable
@@ -119,7 +125,7 @@ public class MultiFieldsDialog extends DesignPatternDialog {
 
 
         public MultiFieldsDialog build() {
-            MultiFieldsDialog multiFieldsDialog = new MultiFieldsDialog(psiClass);
+            MultiFieldsDialog multiFieldsDialog = new MultiFieldsDialog(psiClass, fields);
             multiFieldsDialog.setTitle(title);
             initMainUI();
             multiFieldsDialog.setJComponent(jComponent);
@@ -127,7 +133,7 @@ public class MultiFieldsDialog extends DesignPatternDialog {
         }
 
         public MultiFieldsDialog buildWithButton() {
-            MultiFieldsDialog multiFieldsDialog = new MultiFieldsDialog(psiClass);
+            MultiFieldsDialog multiFieldsDialog = new MultiFieldsDialog(psiClass, fields);
             multiFieldsDialog.setTitle(title);
             initUI();
             multiFieldsDialog.setJComponent(jComponent);
