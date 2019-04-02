@@ -1,5 +1,6 @@
 package ore.plugins.idea.design.patterns.base.dialog.view;
 
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.psi.PsiClass;
 import com.intellij.ui.components.JBTextField;
@@ -50,11 +51,16 @@ public class MultiFieldsDialog extends DesignPatternDialog {
     }
 
 
+    /**
+     * Builder for building different dialogs with sizable amount of fields
+     */
     public static class MultiFieldsDialogBuilder {
         private PsiClass psiClass;
         private String title = "Enter classes of interface";
         private JComponent jComponent;
         private LinkedHashMap<String, LinkedList<JBTextField>> fields;
+
+        private static final String BUTTON_TEXT = "ADD";
 
         private MultiFieldsDialogBuilder(PsiClass psiClass) {
             this.psiClass = psiClass;
@@ -64,7 +70,6 @@ public class MultiFieldsDialog extends DesignPatternDialog {
         public static MultiFieldsDialogBuilder aCreateClassesDialog(PsiClass psiClass) {
             return new MultiFieldsDialogBuilder(psiClass);
         }
-
 
         public MultiFieldsDialogBuilder withTitle(String title) {
             this.title = title;
@@ -89,6 +94,7 @@ public class MultiFieldsDialog extends DesignPatternDialog {
 
             for (Map.Entry<String, LinkedList<JBTextField>> entry : fields.entrySet()) {
                 JBTextField field = new JBTextField();
+                field.setColumns(15);
                 entry.getValue().add(field);
                 linePanel2.add(LabeledComponent.create(field, entry.getKey(), BorderLayout.CENTER));
             }
@@ -120,11 +126,18 @@ public class MultiFieldsDialog extends DesignPatternDialog {
         private void initUI() {
             initMainUI();
             JButton button = new JButton();
+            button.setText(BUTTON_TEXT);
             button.addMouseListener(new MouseAddClickListener());
+            button.revalidate();
             jComponent.add(button);
         }
 
 
+        /**
+         * Build just a form with textFields to enter values
+         *
+         * @return - form with textFields to enter values
+         */
         public MultiFieldsDialog build() {
             MultiFieldsDialog multiFieldsDialog = new MultiFieldsDialog(psiClass, fields);
             multiFieldsDialog.setTitle(title);
@@ -133,6 +146,11 @@ public class MultiFieldsDialog extends DesignPatternDialog {
             return multiFieldsDialog;
         }
 
+        /**
+         * Build component with button for adding new fields
+         *
+         * @return - multiFieldsDialog for entering different args
+         */
         public MultiFieldsDialog buildWithButton() {
             MultiFieldsDialog multiFieldsDialog = new MultiFieldsDialog(psiClass, fields);
             multiFieldsDialog.setTitle(title);

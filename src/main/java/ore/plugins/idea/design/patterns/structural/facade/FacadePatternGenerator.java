@@ -6,10 +6,16 @@ import ore.plugins.idea.design.patterns.base.dialog.model.FacadeModel;
 
 import java.util.Objects;
 
+/**
+ * @author kostya05983
+ * Generates facade pattern
+ */
 public class FacadePatternGenerator {
     private PsiClass psiClass;
     private FacadeModel facadeModel;
     private PsiPackageStatement psiPackageStatement;
+
+    private final static String TYPE = "type";
 
     public FacadePatternGenerator(PsiClass psiClass, FacadeModel facadeModel) {
         this.psiClass = psiClass;
@@ -17,17 +23,20 @@ public class FacadePatternGenerator {
         this.psiPackageStatement = ((PsiJavaFile) psiClass.getContainingFile()).getPackageStatement();
     }
 
+    /**
+     * algorithm of generation facade pattern
+     */
     public void generate() {
         PsiClass interfaceClass = generateInterfaceClass();
         PsiClass enumClass = generateTypesEnum();
         generateInheritablesClasses(enumClass, interfaceClass);
-        generateMethod();
+        generateMethod(enumClass);
     }
 
     /**
      * Create mainMethod
      */
-    private void generateMethod() {
+    private void generateMethod(PsiClass enumClass) {
         final PsiElementFactory factory = JavaPsiFacade.getElementFactory(psiClass.getProject());
         final PsiClassType returnType = factory.createTypeByFQClassName(facadeModel.getMainClassReturnType());
         final PsiMethod mainMethod = factory.createMethod(facadeModel.getMainClassName(), returnType);
@@ -37,18 +46,23 @@ public class FacadePatternGenerator {
                     factory.createTypeByFQClassName(arg.getType()));
             mainMethod.getParameterList().add(parameter);
         }
+        final PsiParameter parameter = factory.createParameter(TYPE,
+                factory.createTypeByFQClassName(enumClass.getName()));
+        mainMethod.getParameterList().add(parameter);
+
         JavaCodeStyleManager.getInstance(psiClass.getProject()).shortenClassReferences(mainMethod);
         psiClass.add(mainMethod);
     }
 
-
+    /**
+     * Generate inerface for
+     *
+     * @return - psiClass of interface representation
+     */
     private PsiClass generateInterfaceClass() {
         final PsiClass psiInterface = JavaPsiFacade.getElementFactory(psiClass.getProject())
                 .createInterface(facadeModel.getInterfaceName());
-        final PsiFile file = psiClass.getContainingFile().getContainingDirectory().
-                createFile(psiInterface.getName().concat(".java"));
-        if (psiPackageStatement != null) file.addAfter(psiPackageStatement, null);
-        file.add(psiInterface);
+        createAndAddToPsiFile(psiInterface);
         return psiInterface;
     }
 
@@ -61,35 +75,45 @@ public class FacadePatternGenerator {
             final PsiEnumConstant constant = factory.createEnumConstantFromText(e.getType(), enumClass);
             enumClass.add(constant);
         });
-
-        final PsiFile file = psiClass.getContainingFile().getContainingDirectory().
-                createFile(enumClass.getName().concat(".java"));
-        if (psiPackageStatement != null) file.addAfter(psiPackageStatement, null);
-        file.add(enumClass);
+        createAndAddToPsiFile(enumClass);
         return enumClass;
     }
+
 
     /**
      * generates inheribitles classes after generation of interface and enum for types
      */
     private void generateInheritablesClasses(PsiClass enumClass, PsiClass interfaceClass) {
         final PsiElementFactory factory = JavaPsiFacade.getElementFactory(psiClass.getProject());
-        for (FacadeModel.Arguments arg : facadeModel.getClassArgs()) {
-            final PsiClass inheritabledClass = factory.createClass(arg.getName());
+
+        for (int i = 0; i < facadeModel.getClassArgs().size(); i++) {
+            final PsiClass inheritabledClass = factory.
+                    createClass(facadeModel.getClassArgs().get(i).getName());
 
             final PsiClassType interfaceType = factory.createType(interfaceClass);
             Objects.requireNonNull(inheritabledClass.getImplementsList())
                     .add(factory.createReferenceElementByType(interfaceType));
 
             final PsiClassType type = factory.createType(enumClass);
-            final PsiField field = factory.createField(arg.getType(),
+            final PsiField field = factory.createField(TYPE,
                     type);
+
             inheritabledClass.add(field);
 
-            final PsiFile file = psiClass.getContainingFile().getContainingDirectory().
-                    createFile(inheritabledClass.getName().concat(".java"));
-            if (psiPackageStatement != null) file.addAfter(psiPackageStatement, null);
-            file.add(inheritabledClass);
+            createAndAddToPsiFile(inheritabledClass);
         }
+
+    }
+
+    /**
+     * Add psi class to file
+     *
+     * @param aClass - add class
+     */
+    private void createAndAddToPsiFile(PsiClass aClass) {
+        final PsiFile file = psiClass.getContainingFile().getContainingDirectory().
+                createFile(aClass.getName().concat(".java"));
+        if (psiPackageStatement != null) file.addAfter(psiPackageStatement, null);
+        file.add(aClass);
     }
 }
