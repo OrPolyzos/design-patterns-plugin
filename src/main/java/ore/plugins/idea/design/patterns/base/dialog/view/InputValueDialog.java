@@ -1,4 +1,4 @@
-package ore.plugins.idea.design.patterns.base.dialog;
+package ore.plugins.idea.design.patterns.base.dialog.view;
 
 import com.intellij.openapi.ui.LabeledComponent;
 import com.intellij.psi.PsiClass;
@@ -23,6 +23,28 @@ public class InputValueDialog extends DesignPatternDialog {
         jPanel.add(jbTextField);
         component = LabeledComponent.create(jPanel, componentText);
         showDialog();
+    }
+
+    public InputValueDialog(PsiClass psiClass) {
+        super(psiClass.getProject());
+        setTitle("");
+        JPanel jPanel = new JPanel();
+        jbTextField = new JBTextField();
+        jbTextField.setEditable(true);
+        jbTextField.setColumns(30);
+        jPanel.add(jbTextField);
+        component = LabeledComponent.create(jPanel, "");
+        showDialog();
+    }
+
+    public InputValueDialog(PsiClass psiClass, String componentText, int columns) {
+        super(psiClass.getProject());
+        JPanel jPanel = new JPanel();
+        jbTextField = new JBTextField();
+        jbTextField.setEditable(true);
+        jbTextField.setColumns(columns);
+        jPanel.add(jbTextField);
+        component = LabeledComponent.create(jPanel, componentText);
     }
 
     @Nullable

@@ -6,7 +6,7 @@ import com.intellij.psi.PsiClass;
 import com.intellij.psi.PsiField;
 import com.intellij.psi.PsiModifier;
 import ore.plugins.idea.design.patterns.base.DesignPatternAction;
-import ore.plugins.idea.design.patterns.base.dialog.SelectStuffDialog;
+import ore.plugins.idea.design.patterns.base.dialog.view.SelectStuffDialog;
 import ore.plugins.idea.design.patterns.exception.InvalidFileException;
 import org.jetbrains.annotations.NotNull;
 

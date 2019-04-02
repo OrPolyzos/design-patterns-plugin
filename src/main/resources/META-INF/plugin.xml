@@ -21,6 +21,10 @@
                     <li>Factory</li>
                     <li>Singleton</li>
                 </ul>
+                <li>Structural</li>
+                <ul>
+                    <li>Facade </li>
+                </ul>
             </ul>
         ]]>
     </description>
@@ -56,6 +60,10 @@
         </action>
         <action id="factoryDesignPattern" class="ore.plugins.idea.design.patterns.creational.factory.FactoryAction" text="Factory"
                 description="Implements Factory Design Pattern">
+            <add-to-group group-id="design-patterns-group" anchor="after"/>
+        </action>
+        <action id="facadeDesignPattern" class="ore.plugins.idea.design.patterns.structural.facade.FacadeAction" text="Facade"
+                description="Implements a Facade Design Pattern">
             <add-to-group group-id="design-patterns-group" anchor="last"/>
         </action>
     </actions>

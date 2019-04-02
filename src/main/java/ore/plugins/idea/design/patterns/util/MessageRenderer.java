@@ -1,7 +1,7 @@
 package ore.plugins.idea.design.patterns.util;
 
 import com.intellij.psi.PsiClass;
-import ore.plugins.idea.design.patterns.base.dialog.MessageBoxDialog;
+import ore.plugins.idea.design.patterns.base.dialog.view.MessageBoxDialog;
 
 public interface MessageRenderer {
 
