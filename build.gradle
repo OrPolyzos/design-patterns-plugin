@@ -22,7 +22,8 @@ apply plugin: 'java'
 apply plugin: 'org.jetbrains.intellij'
 
 intellij {
-    version 'IC-172.3757.5'
+    // Comment in to test on the specific version
+    // version 'IC-172.3757.5'
 }
 
 group 'ore.plugins.idea'
