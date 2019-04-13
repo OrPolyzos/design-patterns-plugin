@@ -39,22 +39,22 @@
         <group id="design-patterns-group" text="Design Patterns" popup="true">
             <add-to-group group-id="EditorPopupMenu" anchor="first"/>
         </group>
-        <action id="builderDesignPattern" class="ore.plugins.idea.design.patterns.creational.builder.BuilderAction"
+        <action id="builderDesignPattern" class="ore.plugins.idea.design.patterns.action.BuilderAction"
                 text="Builder"
                 description="Implements Builder Design Pattern">
             <add-to-group group-id="design-patterns-group" anchor="first"/>
         </action>
-        <action id="singletonDesignPattern" class="ore.plugins.idea.design.patterns.creational.singleton.SingletonAction"
+        <action id="singletonDesignPattern" class="ore.plugins.idea.design.patterns.action.SingletonAction"
                 text="Singleton"
                 description="Implements Singleton Design Pattern">
             <add-to-group group-id="design-patterns-group" anchor="after" relative-to-action="builderDesignPattern"/>
         </action>
-        <action id="strategyDesignPattern" class="ore.plugins.idea.design.patterns.behavioral.strategy.StrategyAction"
+        <action id="strategyDesignPattern" class="ore.plugins.idea.design.patterns.action.StrategyAction"
                 text="Strategy"
                 description="Implements Strategy Design Pattern">
             <add-to-group group-id="design-patterns-group" anchor="after" relative-to-action="singletonDesignPattern"/>
         </action>
-        <action id="factoryDesignPattern" class="ore.plugins.idea.design.patterns.creational.factory.FactoryAction" text="Factory"
+        <action id="factoryDesignPattern" class="ore.plugins.idea.design.patterns.action.FactoryAction" text="Factory"
                 description="Implements Factory Design Pattern">
             <add-to-group group-id="design-patterns-group" anchor="last"/>
         </action>
