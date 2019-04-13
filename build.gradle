@@ -21,8 +21,12 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'org.jetbrains.intellij'
 
+intellij {
+    version 'IC-172.3757.5'
+}
+
 group 'ore.plugins.idea'
-version '2.0.1'
+version '2.0.2'
 
 sourceCompatibility = javaVersion
 targetCompatibility = javaVersion

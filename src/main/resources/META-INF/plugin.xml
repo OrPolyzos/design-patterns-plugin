@@ -3,7 +3,7 @@
     <name>Design Patterns</name>
     <vendor email="orestes.polyzos@gmail.com" url="https://www.linkedin.com/in/orestes-polyzos/">Orestes Polyzos</vendor>
 
-    <idea-version since-build="145.20" until-build="191.*"/>
+    <idea-version since-build="172.*" until-build="191.*"/>
 
     <description>
         <![CDATA[
@@ -28,9 +28,9 @@
     <change-notes>
         <![CDATA[
             <ul>
-                <li>Adds support for IDEA builds from '145.20' to '191.*'</li>
-                <li>Fixes bug that was causing 'NullPointerException' when clicking on non .java files</li>
-                <li>Code refactoring</li>
+                <li>Changes support for IntelliJ IDEA versions since build 172.* until build 191.*</li>
+                <li>Fixes typo with the title of the Builder</li>
+                <li>Major code refactoring</li>
             </ul>
         ]]>
     </change-notes>
