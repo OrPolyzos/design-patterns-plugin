@@ -24,6 +24,7 @@ apply plugin: 'org.jetbrains.intellij'
 intellij {
     // Comment in to test on the specific version
     // version 'IC-172.3757.5'
+    updateSinceUntilBuild false
 }
 
 group 'ore.plugins.idea'
@@ -34,10 +35,6 @@ targetCompatibility = javaVersion
 
 tasks.withType(JavaCompile) {
     options.encoding = projectEncoding
-}
-
-intellij {
-    updateSinceUntilBuild false
 }
 
 publishPlugin {
