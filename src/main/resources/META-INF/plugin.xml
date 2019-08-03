@@ -3,7 +3,7 @@
     <name>Design Patterns</name>
     <vendor email="orestes.polyzos@gmail.com" url="https://www.linkedin.com/in/orestes-polyzos/">Orestes Polyzos</vendor>
 
-    <idea-version since-build="172.*" until-build="191.*"/>
+    <idea-version since-build="172.*" until-build="192.*"/>
 
     <description>
         <![CDATA[
@@ -28,12 +28,21 @@
     <change-notes>
         <![CDATA[
             <ul>
-                <li>Changes support for IntelliJ IDEA versions since build 172.* until build 191.*</li>
-                <li>Fixes typo with the title of the Builder</li>
-                <li>Major code refactoring</li>
+                <li>
+                    <strong>2.0.3</strong>
+                    <ul>
+                        <li>Adds support for IntelliJ IDEA until build '192.*'</li>
+                    </ul>
+                </li>
             </ul>
         ]]>
     </change-notes>
+
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>com.intellij.modules.ultimate</depends>
+    <depends>com.intellij.modules.idea</depends>
+    <depends>com.intellij.modules.idea.ultimate</depends>
 
     <actions>
         <group id="design-patterns-group" text="Design Patterns" popup="true">
@@ -41,21 +50,21 @@
         </group>
         <action id="builderDesignPattern" class="ore.plugins.idea.design.patterns.action.BuilderAction"
                 text="Builder"
-                description="Implements Builder Design Pattern">
+                description="Implements builder design pattern">
             <add-to-group group-id="design-patterns-group" anchor="first"/>
         </action>
         <action id="singletonDesignPattern" class="ore.plugins.idea.design.patterns.action.SingletonAction"
                 text="Singleton"
-                description="Implements Singleton Design Pattern">
+                description="Implements singleton design pattern">
             <add-to-group group-id="design-patterns-group" anchor="after" relative-to-action="builderDesignPattern"/>
         </action>
         <action id="strategyDesignPattern" class="ore.plugins.idea.design.patterns.action.StrategyAction"
                 text="Strategy"
-                description="Implements Strategy Design Pattern">
+                description="Implements strategy design pattern">
             <add-to-group group-id="design-patterns-group" anchor="after" relative-to-action="singletonDesignPattern"/>
         </action>
         <action id="factoryDesignPattern" class="ore.plugins.idea.design.patterns.action.FactoryAction" text="Factory"
-                description="Implements Factory Design Pattern">
+                description="Implements factory design pattern">
             <add-to-group group-id="design-patterns-group" anchor="last"/>
         </action>
     </actions>
