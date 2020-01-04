@@ -1,5 +1,7 @@
 package ore.plugins.idea.lib.action;
 
+import static java.util.Objects.requireNonNull;
+
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
@@ -13,8 +15,6 @@ import ore.plugins.idea.lib.exception.InvalidFileException;
 import ore.plugins.idea.lib.exception.base.ExceptionResolver;
 import ore.plugins.idea.lib.provider.TemplateProvider;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Objects;
 
 public abstract class OrePluginAction extends AnAction implements ExceptionResolver, TemplateProvider {
 
@@ -37,18 +37,35 @@ public abstract class OrePluginAction extends AnAction implements ExceptionResol
 
     protected PsiClass extractPsiClass(@NotNull AnActionEvent anActionEvent) {
         PsiFile psiFile = anActionEvent.getData(LangDataKeys.PSI_FILE);
+        validatePsiFile(psiFile, anActionEvent);
+
         Editor editor = anActionEvent.getData(PlatformDataKeys.EDITOR);
-        if (psiFile == null || isInvalidJavaFile(psiFile) || editor == null) {
-            anActionEvent.getPresentation().setEnabled(false);
-            throw new InvalidFileException();
+        validateForNull(editor, anActionEvent);
+
+        PsiElement elementAt = requireNonNull(psiFile).findElementAt(requireNonNull(editor).getCaretModel().getOffset());
+        validateForNull(elementAt, anActionEvent);
+
+        PsiClass psiClass = PsiTreeUtil.getParentOfType(elementAt, PsiClass.class);
+        validateForNull(psiClass, anActionEvent);
+        return psiClass;
+    }
+
+    private void validatePsiFile(PsiFile psiFile, AnActionEvent anActionEvent) {
+        validateForNull(psiFile, anActionEvent);
+        if (!psiFile.getFileType().getDefaultExtension().equals(JAVA_EXTENSION)) {
+            disableContextMenu(anActionEvent);
         }
-        PsiElement elementAt = Objects.requireNonNull(psiFile).findElementAt(editor.getCaretModel().getOffset());
-        return PsiTreeUtil.getParentOfType(elementAt, PsiClass.class);
     }
 
-    private boolean isInvalidJavaFile(PsiFile psiFile) {
-        return !psiFile.getFileType().getDefaultExtension().equals(JAVA_EXTENSION);
+    private void validateForNull(Object object, AnActionEvent anActionEvent) {
+        if (object == null) {
+            disableContextMenu(anActionEvent);
+        }
     }
 
+    private void disableContextMenu(AnActionEvent anActionEvent) {
+        anActionEvent.getPresentation().setEnabled(false);
+        throw new InvalidFileException();
+    }
 
 }
