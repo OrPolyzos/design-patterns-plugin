@@ -24,7 +24,7 @@ apply plugin: 'java'
 apply plugin: 'org.jetbrains.intellij'
 
 group 'ore.plugins.idea'
-version '2.0.3'
+version '2.0.4'
 
 sourceCompatibility = javaVersion
 targetCompatibility = javaVersion
@@ -36,7 +36,7 @@ tasks.withType(JavaCompile) {
 intellij {
     type 'IU'
     plugins = ['java']
-    version '2019.2'
+    version '2019.3'
     updateSinceUntilBuild false
 }
 

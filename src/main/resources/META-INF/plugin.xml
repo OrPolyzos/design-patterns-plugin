@@ -3,7 +3,7 @@
     <name>Design Patterns</name>
     <vendor email="orestes.polyzos@gmail.com" url="https://www.linkedin.com/in/orestes-polyzos/">Orestes Polyzos</vendor>
 
-    <idea-version since-build="172.*" until-build="192.*"/>
+    <idea-version since-build="172.*" until-build="193.*"/>
 
     <description>
         <![CDATA[
@@ -28,10 +28,11 @@
     <change-notes>
         <![CDATA[
             <ul>
-                <li>
-                    <strong>2.0.3</strong>
+            <li>
+                <strong>2.0.4</strong>
                     <ul>
-                        <li>Adds support for IntelliJ IDEA until build '192.*'</li>
+                        <li>Fixes NPE when caret is inside a .java file but outside of a Java Class</li>
+                        <li>Adds support for IntelliJ IDEA until build '193.*'</li>
                     </ul>
                 </li>
             </ul>
